@@ -1,5 +1,7 @@
 <?php
 
-define("APPLICATION_PATH", realpath(dirname(__FILE__) . '/../')); //指向public的上一级
+date_default_timezone_set("Asia/Shanghai");
+mb_internal_encoding("UTF-8");
+define("APPLICATION_PATH", realpath(dirname(__FILE__) . '/../'));
 $app = new \Yaf\Application(APPLICATION_PATH . "/conf/application.ini");
 $app->bootstrap()->run();
