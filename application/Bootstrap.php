@@ -26,27 +26,6 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
     }
 
     /**
-     * 注册本地类
-     */
-    public function _initRegisterLocalNamespace() {
-        //申明本地类
-        \Yaf\Loader::getInstance()->registerLocalNamespace(array('Zend', 'Our'));
-    }
-
-    /**
-     * 连接 MySQL
-     */
-    public function _initMySQL() {
-        $conf = $this->_config->get('resources.database.params');
-
-        if (!$conf)
-            return false;
-
-        $dbAdapter = new \Zend\Db\Adapter\Adapter($conf->toArray());
-        \Yaf\Registry::set('dbAdapter', $dbAdapter);
-    }
-
-    /**
      * 自定义路由规则
      * 
      * @param Yaf_Dispatcher $dispatcher
@@ -57,34 +36,6 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
         $config = new \Yaf\Config\Ini(APPLICATION_PATH . '/conf/route.ini', 'common');
         if ($config->routes)
             $router->addConfig($config->routes);
-    }
-
-    /**
-     * 使用自定义的View
-     * 
-     * @param \Yaf\Dispatcher $dispatcher
-     */
-    public function _initView(\Yaf\Dispatcher $dispatcher) {
-        $dispatcher->setView(new \Our\View(self::getViewPath()));
-    }
-
-    /**
-     * 获取视图目录
-     * 
-     * @return string
-     */
-    public static function getViewPath() {
-        return APPLICATION_PATH . '/application/views';
-    }
-
-    /**
-     * 获取自定义的网络地址
-     * 
-     * @param string $name
-     * @return string 
-     */
-    public static function getConfigUrl($name) {
-        return \Yaf\Registry::get('config')->get('config.url.' . $name);
     }
 
 }
