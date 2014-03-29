@@ -5,88 +5,6 @@ namespace Our;
 class Common {
 
     /**
-     * ajax请求时输出统一格式的信息,并退出
-     * 
-     * @param string $message
-     * @param int $err 错误编号
-     */
-    public function echoAjaxErrorMessage($message, $callback, $err = 1) {
-        $return = array(
-            'err' => $err,
-            'errmsg' => $message,
-            'result' => array()
-        );
-        echo $callback . '(' . json_encode($return) . ')';
-        exit();
-    }
-
-    /**
-     * ajax请求时输出成功的信息,并退出
-     * 
-     * @param string $message
-     * @param array $result
-     */
-    public function echoAjaxSuccessMessage($message, $callback, $result = array()) {
-        $return = array(
-            'err' => 0,
-            'errmsg' => $message,
-            'result' => $result
-        );
-        echo $callback . '(' . json_encode($return) . ')';
-        exit();
-    }
-
-    /**
-     * 对cacheid进行md5加密
-     * 
-     * @param array $paramArray
-     * @return string
-     */
-    public static function md5CacheId($paramArray) {
-        if (!$paramArray || !is_array($paramArray)) {
-            throw new Exception('md5 cacheId error!');
-        }
-        $cacheId = '';
-        if ($paramArray) {
-            foreach ($paramArray as $param) {
-                if (is_bool($param)) {
-                    $param = $param ? "1" : "0";
-                } else if (is_array($param)) {
-                    $param = md5(json_encode($param));
-                } else if (is_object($param)) {
-                    $param = md5(serialize($param));
-                }
-                $cacheId .= '_iceup_' . $param;
-            }
-        }
-
-        $md5String = md5($cacheId);
-        return $md5String;
-    }
-
-    /**
-     * 判断一个数是否是正整数
-     * 
-     * @param string|int|float $num 
-     * @return mixed
-     */
-    public static function isPositiveIntNumber($num) {
-        $int_options = array("options" => array("min_range" => 1));
-        return filter_var($num, FILTER_VALIDATE_INT, $int_options);
-    }
-
-    /**
-     * 判断一个数是否是非负整数
-     * 
-     * @param string|int|float $num 
-     * @return mixed
-     */
-    public static function isNonnegativeIntNumber($num) {
-        $int_options = array("options" => array("min_range" => 0));
-        return filter_var($num, FILTER_VALIDATE_INT, $int_options);
-    }
-
-    /**
      * 获取http状态码
      * 
      * @param int $num 
@@ -163,37 +81,6 @@ class Common {
      */
     public static function getRequestUrl() {
         return 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-    }
-
-    /**
-     * 调试方法
-     * 
-     * @param mixed $data
-     */
-    public static function dump($data) {
-        echo "<pre>";
-        var_dump($data);
-        echo "</pre>";
-    }
-
-    /**
-     * 检测Url中是否指明不启用读缓存
-     */
-    public static function isUrlSetNoReadCache() {
-        if (stripos($_SERVER['REQUEST_URI'], 'NO_READ_CACHE') !== false) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 检测Url中是否指明不启用缓存
-     */
-    public static function isUrlSetNoCache() {
-        if (stripos($_SERVER['REQUEST_URI'], 'NO_CACHE') !== false) {
-            return true;
-        }
-        return false;
     }
 
 }
