@@ -1,11 +1,11 @@
 <?php
 
-namespace Mapper;
+namespace Mysql;
 
 /**
  * 数据读取模型抽象类
  *
- * @package Mapper
+ * @package Mysql
  */
 abstract class AbstractModel {
 
