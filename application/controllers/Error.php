@@ -3,7 +3,7 @@
 /**
  * 当有未捕获的异常, 则控制流会流到这里
  */
-class ErrorController extends \Youba\Controller_Abstract {
+class ErrorController extends \Our\Controller_Abstract {
 
     public function init() {
         \Yaf\Dispatcher::getInstance()->disableView();
@@ -16,15 +16,15 @@ class ErrorController extends \Youba\Controller_Abstract {
             case 516:
             case 517:
                 //记录404到本地日志
-                \Youba\Log::getInstance()->write($exception->getMessage());
+                \Our\Log::getInstance()->write($exception->getMessage());
                 //输出404
-                header(\Youba\Common::getHttpStatusCode(404));
+                header(\Our\Common::getHttpStatusCode(404));
                 echo '404';
                 exit();
                 break;
             default :
-//                header(\Youba\Common::getHttpStatusCode(500));
-                \Youba\Log::getInstance()->write($exception->getMessage());
+//                header(\Our\Common::getHttpStatusCode(500));
+                \Our\Log::getInstance()->write($exception->getMessage());
                 if (ini_get('display_errors')) {
                     echo '<!DOCTYPE html>
 <html lang="zh-CN">
