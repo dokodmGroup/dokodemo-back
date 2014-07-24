@@ -34,8 +34,9 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
         $router = \Yaf\Dispatcher::getInstance()->getRouter();
 
         $config = new \Yaf\Config\Ini(APPLICATION_PATH . '/conf/route.ini', 'common');
-        if ($config->routes)
+        if ($config->routes) {
             $router->addConfig($config->routes);
+        }
     }
 
 }
