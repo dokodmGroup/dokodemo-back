@@ -15,6 +15,13 @@ class AbstractModel {
     protected $_host = '';
 
     /**
+     * 设置cookie
+     * 
+     * @var array 
+     */
+    protected $_cookies = array();
+
+    /**
      * 发起HTTP请求
      * 
      * @param string $url
@@ -24,7 +31,9 @@ class AbstractModel {
      * @return boolean
      */
     protected function _request($url, $method = "GET", $params = array(), $timeout = 30) {
-        $paramString = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+        $url = $this->_host . $url;
+
+        $paramString = http_build_query($params, '', '&');
         if (strtoupper($method) == "GET") {
             $url .= "?" . $paramString;
         }
@@ -40,6 +49,10 @@ class AbstractModel {
         curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+
+        if ($this->getCookies()) {
+            curl_setopt($ch, CURLOPT_COOKIE, $this->analyzeCookie());
+        }
 
         //检测是否是https访问
         if (strpos($url, 'https') === 0) {
@@ -57,6 +70,37 @@ class AbstractModel {
         curl_close($ch);
 
         return $result;
+    }
+
+    /**
+     * 解析cookie数组，转换成字符串形式
+     * 
+     * @return string
+     */
+    public function analyzeCookie() {
+        $cookie  = '';
+        $cookies = $this->getCookies();
+        foreach ($cookies as $key => $value) {
+            $cookie = $key . '=' . $value . '; ';
+        }
+
+        return substr($cookie, 0, strlen($cookie) - 2);
+    }
+
+    public function getHost() {
+        return $this->_host;
+    }
+
+    public function getCookies() {
+        return $this->_cookies;
+    }
+
+    public function setHost($host) {
+        $this->_host = $host;
+    }
+
+    public function setCookies($cookie) {
+        $this->_cookies = $cookie;
     }
 
     public function __clone() {
