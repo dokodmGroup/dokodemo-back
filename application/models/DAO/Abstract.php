@@ -5,12 +5,13 @@ namespace DAO;
 /**
  * 数据读取模型抽象类
  *
- * @package Mapper
+ * @package DAO
+ * @author iceup <sjlinyu@qq.com>
  */
 abstract class AbstractModel {
 
     /**
-     * 捕获没有的方法，直接访问mysql中相应的类的方法
+     * 捕获dao中没有的方法，直接访问mysql中相应的类的方法
      * 
      * @param string $method
      * @param array $args
