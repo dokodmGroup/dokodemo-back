@@ -1,13 +1,9 @@
 <?php
 
-class IndexController extends \Our\Controller_Abstract {
-
-    public function init() {
-        \Yaf\Dispatcher::getInstance()->disableView();
-    }
+class IndexController extends \Our\Controller_AbstractIndex {
 
     public function indexAction() {
-        $this->getView()->display('index/index.phtml');
+        
     }
 
 }
