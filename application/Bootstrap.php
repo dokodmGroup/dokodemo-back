@@ -39,13 +39,22 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
     }
 
     /**
-     * 获取自定义的网络地址
+     * 获取url.ini配置的地址
      * 
      * @param string $name
      * @return string 
      */
-    public static function getConfigUrl($name) {
-        return \Yaf\Registry::get('config')->get('config.url.' . $name);
+    public static function getUrlIniConfig($name) {
+        static $config = null;
+        if ($config === null) {
+            $config = new \Yaf\Config\Ini(APPLICATION_PATH . '/conf/url.ini', ini_get('yaf.environ'));
+        }
+
+        $urlConf = $config->get('config.url');
+        if ($urlConf === null) {
+            return null;
+        }
+        return $urlConf === null ? null : $urlConf[$name];
     }
 
 }
