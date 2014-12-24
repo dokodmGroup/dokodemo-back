@@ -15,32 +15,15 @@ class ErrorController extends \Our\Controller_Abstract {
             case 515:
             case 516:
             case 517:
-                //记录404到本地日志
-                \Our\Log::getInstance()->write($exception->getMessage());
                 //输出404
                 header(\Our\Common::getHttpStatusCode(404));
                 echo '404';
                 exit();
                 break;
             default :
-//                header(\Our\Common::getHttpStatusCode(500));
-                \Our\Log::getInstance()->write($exception->getMessage());
-                if (ini_get('display_errors')) {
-                    echo '<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>页面出现错误</title>
-        </head>
-        <body>';
-
-                    echo $exception->getMessage() . "\n<br /><br />";
-                    echo str_replace("\n", "\n<br />", $exception->getTraceAsString());
-
-                    echo '</body></html>';
-                }
                 break;
         }
+        throw $exception;
     }
 
 }
