@@ -35,12 +35,17 @@ class Log {
         return $this->_handle;
     }
 
+    /**
+     * 获取实例
+     * 
+     * @return \Our\Log
+     */
     private static $_instance = null;
 
     /**
      * 获取实例
      * 
-     * @return \Youba\Log
+     * @return \Our\Log
      */
     public static function getInstance() {
         if (is_null(self::$_instance)) {
