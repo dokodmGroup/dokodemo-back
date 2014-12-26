@@ -5,7 +5,7 @@ namespace Our;
 /**
  * api模块控制器抽象类
  *
- * @package DAO
+ * @package Our
  * @author iceup <sjlinyu@qq.com>
  */
 abstract class Controller_AbstractApi extends \Our\Controller_Abstract {
