@@ -16,31 +16,10 @@ class AbstractModel {
 
     /**
      * 构造方法
-     * 
-     * @param array $initFieldNames 需要初始化的表单字段名称
      */
     public function __construct($data) {
         $this->setData($data);
-    }
-
-    /**
-     * 获取字段提示信息
-     * 
-     * @param string $field
-     */
-    public function getFieldMessage($field = null) {
-        $fields = $this->getFields();
-        if (!$field) {
-            $fieldsMessage = array();
-            foreach ($fields as $field) {
-                if (isset($field['message']) && $field['message']) {
-                    $fieldsMessage[$field['name']] = $field['message'];
-                }
-            }
-            return $fieldsMessage;
-        }
-
-        return $fields[$field]['message'];
+        $this->_validateFields();
     }
 
     /**
@@ -49,11 +28,99 @@ class AbstractModel {
      * @param array $data
      */
     public function setData($data) {
-        foreach ($data as $k => $v) {
-            if (array_key_exists($k, $this->_fields)) {
-                $this->_fields[$k]['value'] = trim($v);
+        if (count($this->_fields) == 0) {
+            throw new Exception("form fields is not set");
+        }
+        foreach ($this->_fields as $k => $v) {
+            $this->_fields[$k]["is_validate"] = true;
+            if (!isset($this->_fields[$k]["require"])) {
+                $this->_fields[$k]["require"] = true;
+            }
+            if (!isset($this->_fields[$k]["message"])) {
+                $this->_fields[$k]["message"] = $k . " is error";
             }
         }
+        foreach ($this->_fields as $k => $v) {
+            if (array_key_exists($k, $data)) {
+                $this->_fields[$k]['value'] = trim($data[$k]);
+                continue;
+            }
+            if (isset($v["default"])) {
+                $this->_fields[$k]['value'] = $v["default"];
+            }
+        }
+    }
+
+    /**
+     * 校验字段格式设置是否准确
+     * 
+     * @throws \Exception
+     */
+    private function _validateFields() {
+        if (!is_array($this->_fields)) {
+            throw new \Exception("fields is not array");
+        }
+        foreach ($this->_fields as $k => $v) {
+            if (!isset($v["label"])) {
+                throw new \Exception("field " . $k . " label is not set");
+            }
+            if (!isset($v["name"])) {
+                throw new \Exception("field " . $k . " name is not set");
+            }
+            if ($k !== $v["name"]) {
+                throw new \Exception("field " . $k . " name is not same");
+            }
+            if (isset($v["validate"])) {
+                if (!is_array($v["validate"])) {
+                    throw new \Exception("field " . $k . " validate is not array");
+                }
+                foreach ($v["validate"] as $validate) {
+                    if (!isset($validate["type"])) {
+                        throw new \Exception("field " . $k . " validate type is not set");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 校验所有字段的值
+     * 
+     * @return boolean
+     */
+    public function validate() {
+        foreach ($this->_fields as $fieldName => $field) {
+            if (!$field["require"] && !isset($field["value"])) {
+                continue;
+            }
+            if ($field["require"] && empty($field["value"])) {
+                $this->_fields[$fieldName]["is_validate"] = false;
+                continue;
+            }
+            if (!empty($field['validate'])) {
+                foreach ($field['validate'] as $validate) {
+                    $validateMethodName = '_validateFieldValue' . $validate["type"];
+                    if (method_exists($this, $validateMethodName)) {
+                        $this->$validateMethodName($fieldName, $validate);
+                    }
+                }
+            }
+            //检测各个字段自己的校验方法
+            $methodName = 'validate' . ucfirst(preg_replace_callback('/_\w/i'
+                                    , create_function('$matches', 'return strtoupper(ltrim($matches[0],"_"));')
+                                    , $fieldName));
+            if (method_exists($this, $methodName)) {
+                if (!$this->$methodName()) {
+                    $this->_fields[$fieldName]["is_validate"] = false;
+                }
+            }
+        }
+        foreach ($this->_fields as $field) {
+            if (!$field["is_validate"]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -63,75 +130,36 @@ class AbstractModel {
      * @return mix
      */
     public function getFieldValue($fieldName = null) {
-        $fields = $this->getFields();
         if (!$fieldName) { //获取所有字段的值
             $fieldsValue = array();
-            foreach ($fields as $field) {
-                $fieldsValue[$field['name']] = isset($field['value']) ? $field['value'] : '';
+            foreach ($this->_fields as $field) {
+                if (isset($field['value'])) {
+                    $fieldsValue[$field['name']] = $field['value'];
+                }
             }
-
             return $fieldsValue;
         }
-
-        foreach ($fields as $field) {
-            if ($field['name'] == $fieldName) {
-                return isset($field['value']) ? $field['value'] : null;
+        foreach ($this->_fields as $field) {
+            if ($field['name'] == $fieldName && isset($field['value'])) {
+                return $field['value'];
             }
         }
-
         return null;
     }
 
     /**
-     * 校验所有字段的值
+     * 获取没有校验过的字段提示信息
      * 
-     * @param array $data
-     * @return boolean
+     * @return array
      */
-    public function validate() {
-        $result = true;
-        foreach ($this->_fields as $fieldName => $field) {
-            if (!empty($field['validate'])) {
-                foreach ($field['validate'] as $validate) {
-                    switch ($validate["type"]) {
-                        case "string":
-                            if (!$this->_validateLength(array(
-                                        "value" => $field["value"],
-                                        "min"   => $validate["min"],
-                                        "max"   => $validate["max"],
-                                    ))) {
-                                $result = false;
-                                $this->setFieldMessage($fieldName, $validate["msg"]);
-                            };
-                            break;
-                        case "int":
-                            if (!$this->_validateInt(array(
-                                        "value" => $field["value"],
-                                        "min"   => $validate["min"],
-                                        "max"   => $validate["max"],
-                                    ))) {
-                                $result = false;
-                                $this->setFieldMessage($fieldName, $validate["msg"]);
-                            };
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            //检测各个字段自己的校验方法
-            $methodName = 'validate' . ucfirst(preg_replace_callback('/_\w/i'
-                                    , create_function('$matches', 'return strtoupper(ltrim($matches[0],"_"));')
-                                    , $fieldName));
-            if (method_exists($this, $methodName)) {
-                if (!$this->$methodName()) {
-                    $result = false;
-                }
+    public function getMessages() {
+        $fieldsMessage = array();
+        foreach ($this->_fields as $field) {
+            if (!$field['is_validate']) {
+                $fieldsMessage[$field['name']] = $field['message'];
             }
         }
-
-        return $result;
+        return $fieldsMessage;
     }
 
     /**
@@ -153,8 +181,9 @@ class AbstractModel {
      * @param array|string $attrs
      */
     public function getFieldAttrs($fieldName, $attrs) {
+        $this->_validateFieldExist($fieldName);
         if (is_string($attrs)) {
-            if (!empty($this->_fields[$fieldName][$attrs])) {
+            if (isset($this->_fields[$fieldName][$attrs])) {
                 return $this->_fields[$fieldName][$attrs];
             }
             return null;
@@ -162,9 +191,12 @@ class AbstractModel {
 
         $return = array();
         foreach ($attrs as $attr) {
-            $return[$attr] = empty($this->_fields[$fieldName][$attr]) ? null : $this->_fields[$fieldName][$attr];
+            if (isset($this->_fields[$fieldName][$attr])) {
+                $return[$attr] = $this->_fields[$fieldName][$attr];
+                continue;
+            }
+            $return[$attr] = null;
         }
-
         return $return;
     }
 
@@ -172,35 +204,11 @@ class AbstractModel {
      * 设置字段是否需要校验
      * 
      * @param string $fieldName
-     * @param boolean $isNeedValidate
+     * @param boolean $isRequire
      */
-    public function setFieldIsNeedValidate($fieldName, $isNeedValidate) {
-        $this->setFiledsAttr($fieldName, array('validate' => $isNeedValidate));
-    }
-
-    /**
-     * 设置字段允许为空
-     * 
-     * @param string $fieldName
-     * @param boolean $isNeedValidate
-     */
-    public function setFieldAllowEmpty($fieldName) {
-        $this->setFiledsAttr($fieldName, array('allow_empty' => true));
-    }
-
-    /**
-     * 检测字段是否允许为空
-     * 
-     * @param string $fieldName
-     * @return boolean
-     */
-    public function isFieldAllowEmpty($fieldName) {
-        $result = $this->getFieldAttrs($fieldName, 'allow_empty');
-        if ($result === true) {
-            return true;
-        }
-
-        return false;
+    public function setRequire($fieldName, $isRequire) {
+        $this->_validateFieldExist($fieldName);
+        $this->setFiledsAttr($fieldName, array('requrie' => $isRequire));
     }
 
     /**
@@ -210,23 +218,22 @@ class AbstractModel {
      * @param string $message
      */
     public function setFieldMessage($fieldName, $message) {
-        if (empty($this->_fields[$fieldName])) {
-            throw new \Exception("字段中没有叫" . $fieldName);
-        }
+        $this->_validateFieldExist($fieldName);
         $this->_fields[$fieldName]['message'] = $message;
     }
 
     /**
-     * 增加字段
+     * 校验字段是否存在
      * 
      * @param string $fieldName
+     * @return boolean
+     * @throws \Exception
      */
-    public function addField($fieldName) {
-        $allFieldsIni = $this->getAllFieldsIni();
-        if (!isset($allFieldsIni[$fieldName])) {
-            throw new \Exception('Form field is not exists.');
+    private function _validateFieldExist($fieldName) {
+        if (!array_key_exists($fieldName, $this->_fields)) {
+            throw new \Exception("field " . $fieldName . " is not exist");
         }
-        $this->_fields[$fieldName] = $allFieldsIni[$fieldName];
+        return true;
     }
 
     /**
@@ -247,6 +254,46 @@ class AbstractModel {
      */
     public function getFields() {
         return $this->_fields;
+    }
+
+    /**
+     * 字符串校验器
+     */
+    private function _validateFieldValueString($fieldName, $validate) {
+        $field = $this->_fields[$fieldName];
+        if ($this->_validateLength(array(
+                    "value" => $field["value"],
+                    "min"   => $validate["min"],
+                    "max"   => $validate["max"],
+                ))) {
+            $this->_fields[$fieldName]["is_validate"] = true;
+        } else {
+            if (isset($validate["msg"])) {
+                $this->setFieldMessage($fieldName, $validate["msg"]);
+            }
+            $this->_fields[$fieldName]["is_validate"] = false;
+        }
+        return $this->_fields[$fieldName]["is_validate"];
+    }
+
+    /**
+     * 整形校验器
+     */
+    private function _validateFieldValueInt($fieldName, $validate) {
+        $field = $this->_fields[$fieldName];
+        if ($this->_validateInt(array(
+                    "value" => $field["value"],
+                    "min"   => $validate["min"],
+                    "max"   => $validate["max"],
+                ))) {
+            $this->_fields[$fieldName]["is_validate"] = true;
+        } else {
+            if (isset($validate["msg"])) {
+                $this->setFieldMessage($fieldName, $validate["msg"]);
+            }
+            $this->_fields[$fieldName]["is_validate"] = false;
+        }
+        return $this->_fields[$fieldName]["is_validate"];
     }
 
     /**

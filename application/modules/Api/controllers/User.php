@@ -12,12 +12,25 @@ class UserController extends \Our\Controller_AbstractApi {
         $form = new \Forms\User\LoginModel($this->getRequest()->getParams());
         if (!$form->validate()) {
             echo "表单校验没有通过，相关字段的错误信息：";
-            var_dump($form->getFieldMessage());
+            var_dump($form->getMessages());
             exit();
         }
         echo "表单校验通过，所有字段的值：";
         var_dump($form->getFieldValue());
-        
+    }
+
+    /**
+     * demo演示
+     */
+    public function demoAction() {
+        $form = new \Forms\User\DemoModel($this->getRequest()->getParams());
+        if (!$form->validate()) {
+            echo "表单校验没有通过，相关字段的错误信息：";
+            var_dump($form->getMessages());
+            exit();
+        }
+        echo "表单校验通过，所有字段的值：";
+        var_dump($form->getFieldValue());
     }
 
 }
