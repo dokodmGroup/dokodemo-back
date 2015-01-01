@@ -33,7 +33,7 @@ class DemoModel extends \Forms\AbstractModel {
     );
 
     /**
-     * 校验demo2字段
+     * 校验demo2字段，名字由validate+字段名开头的方法将被调用
      * 
      * @return boolean
      */
