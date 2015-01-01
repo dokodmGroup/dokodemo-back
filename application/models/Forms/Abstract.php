@@ -8,14 +8,7 @@ namespace Forms;
 class AbstractModel {
 
     /**
-     * 所有的表单字段配置
-     * 
-     * @var array
-     */
-    protected $_allFieldsIni = array();
-
-    /**
-     * 实际操作的表单字段
+     * 表单字段
      * 
      * @var array
      */
@@ -26,16 +19,8 @@ class AbstractModel {
      * 
      * @param array $initFieldNames 需要初始化的表单字段名称
      */
-    public function __construct(array $initFieldNames = array()) {
-        if (!$initFieldNames) {
-            $allIniFields = $this->getAllFieldsIni();
-            foreach ($allIniFields as $field) {
-                $this->addField($field['name']);
-            }
-        }
-        foreach ($initFieldNames as $fieldName) {
-            $this->addField($fieldName);
-        }
+    public function __construct($data) {
+        $this->setData($data);
     }
 
     /**
@@ -103,13 +88,38 @@ class AbstractModel {
      * @param array $data
      * @return boolean
      */
-    public function validate($data) {
-        $this->setData($data);
+    public function validate() {
         $result = true;
-        foreach ($this->_fields as $fieldName => $fieldConfig) {
-            if (isset($fieldConfig['validate']) && $fieldConfig['validate'] === false) {
-                continue;
+        foreach ($this->_fields as $fieldName => $field) {
+            if (!empty($field['validate'])) {
+                foreach ($field['validate'] as $validate) {
+                    switch ($validate["type"]) {
+                        case "string":
+                            if (!$this->_validateLength(array(
+                                        "value" => $field["value"],
+                                        "min"   => $validate["min"],
+                                        "max"   => $validate["max"],
+                                    ))) {
+                                $result = false;
+                                $this->setFieldMessage($fieldName, $validate["msg"]);
+                            };
+                            break;
+                        case "int":
+                            if (!$this->_validateInt(array(
+                                        "value" => $field["value"],
+                                        "min"   => $validate["min"],
+                                        "max"   => $validate["max"],
+                                    ))) {
+                                $result = false;
+                                $this->setFieldMessage($fieldName, $validate["msg"]);
+                            };
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
+
             //检测各个字段自己的校验方法
             $methodName = 'validate' . ucfirst(preg_replace_callback('/_\w/i'
                                     , create_function('$matches', 'return strtoupper(ltrim($matches[0],"_"));')
@@ -237,18 +247,6 @@ class AbstractModel {
      */
     public function getFields() {
         return $this->_fields;
-    }
-
-    /**
-     * 获取所有设置的字段
-     * 
-     * @return array
-     */
-    public function getAllFieldsIni() {
-        if (!$this->_allFieldsIni) {
-            $this->setAllFieldsIni();
-        }
-        return $this->_allFieldsIni;
     }
 
     /**
