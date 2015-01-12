@@ -29,7 +29,7 @@ class AbstractModel {
      */
     public function setData($data) {
         if (count($this->_fields) == 0) {
-            throw new Exception("form fields is not set");
+            throw new \Exception("form fields is not set");
         }
         foreach ($this->_fields as $k => $v) {
             $this->_fields[$k]["is_validate"] = true;
