@@ -17,8 +17,14 @@ class AbstractModel {
     /**
      * 构造方法
      */
-    public function __construct($data) {
-        $this->setData($data);
+    public function __construct($data = array()) {
+        if (count($this->_fields) == 0) {
+            throw new \Exception("form fields is not set");
+        }
+        $this->_setFieldDefaultData();
+        if ($data) {
+            $this->setData($data);
+        }
         $this->_validateFields();
     }
 
@@ -28,18 +34,6 @@ class AbstractModel {
      * @param array $data
      */
     public function setData($data) {
-        if (count($this->_fields) == 0) {
-            throw new \Exception("form fields is not set");
-        }
-        foreach ($this->_fields as $k => $v) {
-            $this->_fields[$k]["is_validate"] = true;
-            if (!isset($this->_fields[$k]["require"])) {
-                $this->_fields[$k]["require"] = true;
-            }
-            if (!isset($this->_fields[$k]["message"])) {
-                $this->_fields[$k]["message"] = $k . " is error";
-            }
-        }
         foreach ($this->_fields as $k => $v) {
             if (array_key_exists($k, $data)) {
                 $this->_fields[$k]['value'] = trim($data[$k]);
@@ -47,6 +41,21 @@ class AbstractModel {
             }
             if (isset($v["default"])) {
                 $this->_fields[$k]['value'] = $v["default"];
+            }
+        }
+    }
+
+    /**
+     * 设置字段的默认数据
+     */
+    private function _setFieldDefaultData() {
+        foreach ($this->_fields as $k => $v) {
+            $this->_fields[$k]["is_validate"] = true;
+            if (!isset($this->_fields[$k]["require"])) {
+                $this->_fields[$k]["require"] = true;
+            }
+            if (!isset($this->_fields[$k]["message"])) {
+                $this->_fields[$k]["message"] = $k . " is error";
             }
         }
     }
