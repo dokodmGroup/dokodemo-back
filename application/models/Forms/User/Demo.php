@@ -30,6 +30,38 @@ class DemoModel extends \Forms\AbstractModel {
                 array("type" => "string", "min" => "6", "max" => "18", "msg" => "demo2不正确")
             ),
         ),
+        'demo3' => array(
+            'label'    => 'demo3',
+            'name'     => 'demo3',
+            'require'  => true,
+            "validate" => array(
+                array("type" => "string", "max" => "18", "msg" => "demo3不正确")
+            ),
+        ),
+        'demo4' => array(
+            'label'    => 'demo4',
+            'name'     => 'demo4',
+            'require'  => true,
+            "validate" => array(
+                array("type" => "string", "min" => "6", "msg" => "demo4不正确")
+            ),
+        ),
+        'demo5' => array(
+            'label'    => 'demo5',
+            'name'     => 'demo5',
+            'require'  => true,
+            "validate" => array(
+                array("type" => "int", "min" => "1", "msg" => "demo5不正确")
+            ),
+        ),
+        'demo6' => array(
+            'label'    => 'demo6',
+            'name'     => 'demo6',
+            'require'  => true,
+            "validate" => array(
+                array("type" => "int", "max" => "100", "msg" => "demo6不正确")
+            ),
+        ),
     );
 
     /**

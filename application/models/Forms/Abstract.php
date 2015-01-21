@@ -267,42 +267,52 @@ class AbstractModel {
 
     /**
      * 字符串校验器
+     * 
+     * @return boolean
      */
     private function _validateFieldValueString($fieldName, $validate) {
-        $field = $this->_fields[$fieldName];
-        if ($this->_validateLength(array(
-                    "value" => $field["value"],
-                    "min"   => $validate["min"],
-                    "max"   => $validate["max"],
-                ))) {
-            $this->_fields[$fieldName]["is_validate"] = true;
-        } else {
-            if (isset($validate["msg"])) {
-                $this->setFieldMessage($fieldName, $validate["msg"]);
-            }
-            $this->_fields[$fieldName]["is_validate"] = false;
+        $field   = $this->_fields[$fieldName];
+        $options = array("value" => $field["value"]);
+        if (isset($validate["min"])) {
+            $options["min"] = $validate["min"];
         }
-        return $this->_fields[$fieldName]["is_validate"];
+        if (isset($validate["max"])) {
+            $options["max"] = $validate["max"];
+        }
+        if ($this->_validateLength($options)) {
+            $this->_fields[$fieldName]["is_validate"] = true;
+            return true;
+        }
+        if (isset($validate["msg"])) {
+            $this->setFieldMessage($fieldName, $validate["msg"]);
+        }
+        $this->_fields[$fieldName]["is_validate"] = false;
+        return false;
     }
 
     /**
      * 整形校验器
+     * 
+     * @return boolean
      */
     private function _validateFieldValueInt($fieldName, $validate) {
-        $field = $this->_fields[$fieldName];
-        if ($this->_validateInt(array(
-                    "value" => $field["value"],
-                    "min"   => $validate["min"],
-                    "max"   => $validate["max"],
-                ))) {
-            $this->_fields[$fieldName]["is_validate"] = true;
-        } else {
-            if (isset($validate["msg"])) {
-                $this->setFieldMessage($fieldName, $validate["msg"]);
-            }
-            $this->_fields[$fieldName]["is_validate"] = false;
+        $field   = $this->_fields[$fieldName];
+        $options = array("value" => $field["value"]);
+        if (isset($validate["min"])) {
+            $options["min"] = $validate["min"];
         }
-        return $this->_fields[$fieldName]["is_validate"];
+        if (isset($validate["max"])) {
+            $options["max"] = $validate["max"];
+        }
+        if ($this->_validateInt($options)) {
+            $this->_fields[$fieldName]["is_validate"] = true;
+            return true;
+        }
+        if (isset($validate["msg"])) {
+            $this->setFieldMessage($fieldName, $validate["msg"]);
+        }
+        $this->_fields[$fieldName]["is_validate"] = false;
+        return false;
     }
 
     /**
