@@ -51,10 +51,10 @@ class AbstractModel {
     private function _setFieldDefaultData() {
         foreach ($this->_fields as $k => $v) {
             $this->_fields[$k]["is_validate"] = true;
-            if (!isset($this->_fields[$k]["require"])) {
+            if (!isset($v["require"])) {
                 $this->_fields[$k]["require"] = true;
             }
-            if (!isset($this->_fields[$k]["message"])) {
+            if (!isset($v["message"])) {
                 $this->_fields[$k]["message"] = $k . " is error";
             }
         }
