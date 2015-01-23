@@ -17,7 +17,15 @@ abstract class AbstractModel {
     protected $_tableName = null;
 
     /**
-     * 返回 Zend 的适配器
+     * 表的主键名
+     * 
+     * @var type 
+     */
+    protected $_primaryKey = "id";
+
+    /**
+     * 返回Zend的适配器Adapter
+     * 
      * @return \Zend\Db\Adapter\Adapter
      */
     public function _getAdapter() {
@@ -35,7 +43,8 @@ abstract class AbstractModel {
     }
 
     /**
-     * 返回 Zend 的 TableGateway，用于写
+     * 返回Zend的TableGateway
+     * 
      * @return \Zend\Db\TableGateway\TableGateway
      */
     protected function _getDbTableGateway() {
@@ -44,7 +53,8 @@ abstract class AbstractModel {
     }
 
     /**
-     * 返回 Zend 的 TableGateway
+     * 返回Zend的Select对象
+     * 
      * @return Zend\Db\Sql\Select
      */
     protected function _getDbSelect() {
@@ -74,20 +84,25 @@ abstract class AbstractModel {
     }
 
     /**
-     * @param int $id,主键
-     * @return \SiteModel | null
+     * 根据主键查找数据
+     * 
+     * @param int $id 主键
+     * @return array | null
      */
     public function find($id) {
-        $resultSet = $this->_getDbTableGateway()->select(array('id' => $id));
+        $resultSet = $this->_getDbTableGateway()->select(array($this->_primaryKey => $id));
         return $resultSet->current();
     }
 
     /**
-     * 获取所有的行.
+     * 根据各个参数筛选出合适的数据
      * 
-     * @param  \Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where
-     * @param string|array $order
-     * @param int $count
+     * @param array         $columns    需要查找的字段
+     * @param array         $where      筛选条件
+     * @param array         $order      排序条件
+     * @param int           $count      条数
+     * @param int           $offset     偏移量
+     * @param array         $group      分组条件
      * @return array
      */
     public function fetchAll($columns = null, $where = null, $order = null, $count = null, $offset = null, $group = null) {
@@ -99,24 +114,7 @@ abstract class AbstractModel {
             $select->columns($columns);
         }
         if ($where) {
-            $isArray = false;
-            foreach ($where as $v) {
-                if (is_array($v)) {
-                    $isArray = true;
-                    break;
-                }
-            }
-            if ($isArray) {
-                foreach ($where as $k => $v) {
-                    if ($k == 'or') {
-                        $select->where($v, \Zend\Db\Sql\Where::OP_OR);
-                    } else {
-                        $select->where($v);
-                    }
-                }
-            } else {
-                $select->where($where);
-            }
+            $select->where($where);
         }
         if ($count) {
             $select->limit($count);
@@ -153,11 +151,10 @@ abstract class AbstractModel {
     }
 
     /**
-
      * Updates existing data.
      *
      * @param array $data
-     * @param string|array|closure $where
+     * @param array $where
      * @return int The number of rows updated.
      */
     public function update($data, $where) {
@@ -167,7 +164,7 @@ abstract class AbstractModel {
     /**
      * remove existing data.
      *
-     * @param Where|\Closure|string|array $where
+     * @param array $where
      * @return int The number of rows deleted.
      */
     public function remove($where) {
