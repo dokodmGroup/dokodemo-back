@@ -16,11 +16,21 @@ class UserController extends \Our\Controller_AbstractApi {
             exit();
         }
         echo "表单校验通过，所有字段的值：";
-        var_dump($form->getFieldValue());
+        $params = $form->getFieldValue();
+        var_dump($params);
+
+        $v = $this->getRequest()->getParam("v", 1);
+        if ($v == 1) {
+            $bn = \Business\User\LoginModel::getInstance();
+        } else if ($v == 2) {
+            $bn = \Business\User\LoginV2Model::getInstance();
+        }
+        $result = $bn->login($params);
+        var_dump($result);
     }
 
     /**
-     * demo演示
+     * 表单demo
      */
     public function demoAction() {
         $form = new \Forms\User\DemoModel($this->getRequest()->getParams());
