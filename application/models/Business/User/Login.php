@@ -14,7 +14,9 @@ class LoginModel extends \Business\AbstractModel {
      * @return
      */
     public function login($params) {
-        
+        if (!false) {
+            \Error\ErrorModel::throwException("100110");
+        }
     }
 
     /**
