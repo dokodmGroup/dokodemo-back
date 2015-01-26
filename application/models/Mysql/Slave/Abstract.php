@@ -1,11 +1,11 @@
 <?php
 
-namespace Mysql;
+namespace Mysql\Slave;
 
 /**
- * 数据读取模型抽象类
+ * 主库的从库抽象模型
  *
- * @package Mysql
+ * @package Mysql\Slave
  */
 abstract class AbstractModel {
 
@@ -24,15 +24,14 @@ abstract class AbstractModel {
     protected $_primaryKey = "id";
 
     /**
-     * 返回Zend的适配器Adapter
-     * 
+     * 返回 Zend 的适配器
      * @return \Zend\Db\Adapter\Adapter
      */
     public function _getAdapter() {
         static $dbAdapter = null;
 
         if (!$dbAdapter) {
-            $conf = \Yaf\Registry::get('config')->get('resources.database.params');
+            $conf = \Yaf\Registry::get('config')->get('resources.database.slave.params');
             if (!$conf) {
                 throw new \Exception('数据库连接必须设置');
             }
@@ -43,16 +42,6 @@ abstract class AbstractModel {
     }
 
     /**
-     * 返回Zend的TableGateway
-     * 
-     * @return \Zend\Db\TableGateway\TableGateway
-     */
-    protected function _getDbTableGateway() {
-        $tableGateway = new \Zend\Db\TableGateway\TableGateway($this->_tableName, $this->_getAdapter());
-        return $tableGateway;
-    }
-
-    /**
      * 返回Zend的Select对象
      * 
      * @return Zend\Db\Sql\Select
@@ -60,38 +49,6 @@ abstract class AbstractModel {
     protected function _getDbSelect() {
         $sql = new \Zend\Db\Sql\Sql($this->_getAdapter(), $this->_tableName);
         return $sql->select();
-    }
-
-    /**
-     * 开启事务
-     */
-    public function beginTransaction() {
-        $this->_getAdapter()->getDriver()->getConnection()->beginTransaction();
-    }
-
-    /**
-     * 提交事务
-     */
-    public function commit() {
-        $this->_getAdapter()->getDriver()->getConnection()->commit();
-    }
-
-    /**
-     * 回滚事务
-     */
-    public function rollback() {
-        $this->_getAdapter()->getDriver()->getConnection()->rollback();
-    }
-
-    /**
-     * 根据主键查找数据
-     * 
-     * @param int $id 主键
-     * @return array | null
-     */
-    public function find($id) {
-        $resultSet = $this->_getDbTableGateway()->select(array($this->_primaryKey => $id));
-        return $resultSet->current();
     }
 
     /**
@@ -130,43 +87,6 @@ abstract class AbstractModel {
         $rows         = $adapter->query($selectString, $adapter::QUERY_MODE_EXECUTE)->toArray();
 
         return $rows;
-    }
-
-    /**
-     * insert data
-     * 
-     * @param array $data
-     * @return int|false
-     */
-    public function insert($data, $isReturnLastInsertValue = false) {
-        $dbTableGateway = $this->_getDbTableGateway();
-        $result         = $dbTableGateway->insert($data);
-        if ($isReturnLastInsertValue && $result) {
-            return $dbTableGateway->getLastInsertValue();
-        }
-
-        return $result;
-    }
-
-    /**
-     * Updates existing data.
-     *
-     * @param array $data
-     * @param array $where
-     * @return int The number of rows updated.
-     */
-    public function update($data, $where) {
-        return $this->_getDbTableGateway()->update($data, $where);
-    }
-
-    /**
-     * remove existing data.
-     *
-     * @param array $where
-     * @return int The number of rows deleted.
-     */
-    public function remove($where) {
-        return $this->_getDbTableGateway()->delete($where);
     }
 
     /**

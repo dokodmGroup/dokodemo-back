@@ -14,8 +14,16 @@ class UserModel extends \DAO\AbstractModel {
      * @return array
      */
     public function find($userId) {
-        $mysql = \Mysql\UserModel::getInstance();
-        return $mysql-
+        $redis = \Redis\Db0\UserModel::getInstance();
+        $user  = $redis->find($userId);
+        if (!$user) {
+            $mysql = \Mysql\UserModel::getInstance();
+            $user  = $mysql->find($userId);
+            if ($user) {
+                $redis->update($userId, $user);
+            }
+        }
+        return $user;
     }
 
     /**
