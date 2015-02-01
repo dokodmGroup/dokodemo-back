@@ -102,9 +102,19 @@ class AbstractModel {
             if (!$field["require"] && !isset($field["value"])) {
                 continue;
             }
-            if ($field["require"] && empty($field["value"])) {
-                $this->_fields[$fieldName]["is_validate"] = false;
-                continue;
+            if ($field["require"]) {
+                if (!isset($field["value"])) {
+                    $this->_fields[$fieldName]["is_validate"] = false;
+                    continue;
+                }
+                if (is_string($field["value"]) && strlen($field["value"]) == 0) {
+                    $this->_fields[$fieldName]["is_validate"] = false;
+                    continue;
+                }
+                if (is_array($field["value"]) && count($field["value"]) == 0) {
+                    $this->_fields[$fieldName]["is_validate"] = false;
+                    continue;
+                }
             }
             if (!empty($field['validate'])) {
                 foreach ($field['validate'] as $validate) {
