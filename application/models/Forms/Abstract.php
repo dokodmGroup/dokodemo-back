@@ -39,9 +39,6 @@ class AbstractModel {
                 $this->_fields[$k]['value'] = trim($data[$k]);
                 continue;
             }
-            if (isset($v["default"])) {
-                $this->_fields[$k]['value'] = $v["default"];
-            }
         }
     }
 
@@ -56,6 +53,9 @@ class AbstractModel {
             }
             if (!isset($v["message"])) {
                 $this->_fields[$k]["message"] = $k . " is error";
+            }
+            if (isset($v["default"])) {
+                $this->_fields[$k]['value'] = $v["default"];
             }
         }
     }
