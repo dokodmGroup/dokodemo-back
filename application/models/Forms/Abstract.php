@@ -146,6 +146,8 @@ class AbstractModel {
             foreach ($this->_fields as $field) {
                 if (isset($field['value'])) {
                     $fieldsValue[$field['name']] = $field['value'];
+                } else {
+                    $fieldsValue[$field['name']] = null;
                 }
             }
             return $fieldsValue;
