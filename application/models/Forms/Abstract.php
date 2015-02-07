@@ -136,6 +136,7 @@ class AbstractModel {
 
     /**
      * 获取字段的值
+     * 如果该字段没有值，则返回null
      * 
      * @param string $fieldName
      * @return mix
