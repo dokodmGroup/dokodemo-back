@@ -326,6 +326,31 @@ class AbstractModel {
     }
 
     /**
+     * 小数校验器
+     * 
+     * @return boolean
+     */
+    private function _validateFieldValueFloat($fieldName, $validate) {
+        $field   = $this->_fields[$fieldName];
+        $options = array("value" => $field["value"]);
+        if (isset($validate["min"])) {
+            $options["min"] = $validate["min"];
+        }
+        if (isset($validate["max"])) {
+            $options["max"] = $validate["max"];
+        }
+        if ($this->_validateFloat($options)) {
+            $this->_fields[$fieldName]["is_validate"] = true;
+            return true;
+        }
+        if (isset($validate["msg"])) {
+            $this->setFieldMessage($fieldName, $validate["msg"]);
+        }
+        $this->_fields[$fieldName]["is_validate"] = false;
+        return false;
+    }
+
+    /**
      * 校验字符串长度
      * 
      * @param array $options
@@ -363,6 +388,26 @@ class AbstractModel {
         }
         $result = filter_var($num, FILTER_VALIDATE_INT, $int_options);
         if ($result === FALSE) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 校验小数
+     * 
+     * @param array $options
+     * @return boolean
+     */
+    protected function _validateFloat($options) {
+        $result = filter_var($options["value"], FILTER_VALIDATE_FLOAT);
+        if ($result === false) {
+            return false;
+        }
+        if (isset($options['min']) && $options["value"] < $options["min"]) {
+            return false;
+        }
+        if (isset($options['max']) && $options["value"] > $options["max"]) {
             return false;
         }
         return true;
