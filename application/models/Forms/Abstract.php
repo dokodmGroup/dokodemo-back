@@ -102,19 +102,11 @@ class AbstractModel {
             if (!$field["require"] && !isset($field["value"])) {
                 continue;
             }
-            if ($field["require"]) {
-                if (!isset($field["value"])) {
-                    $this->_fields[$fieldName]["is_validate"] = false;
-                    continue;
-                }
-                if (is_string($field["value"]) && strlen($field["value"]) == 0) {
-                    $this->_fields[$fieldName]["is_validate"] = false;
-                    continue;
-                }
-                if (is_array($field["value"]) && count($field["value"]) == 0) {
-                    $this->_fields[$fieldName]["is_validate"] = false;
-                    continue;
-                }
+            if ($field["require"] &&
+                    !in_array($field["value"], array(0, "0"), true) &&
+                    empty($field["value"])) {
+                $this->_fields[$fieldName]["is_validate"] = false;
+                continue;
             }
             if (!empty($field['validate'])) {
                 foreach ($field['validate'] as $validate) {
@@ -144,6 +136,7 @@ class AbstractModel {
 
     /**
      * 获取字段的值
+     * 如果该字段没有值，则返回null
      * 
      * @param string $fieldName
      * @return mix
@@ -154,6 +147,8 @@ class AbstractModel {
             foreach ($this->_fields as $field) {
                 if (isset($field['value'])) {
                     $fieldsValue[$field['name']] = $field['value'];
+                } else {
+                    $fieldsValue[$field['name']] = null;
                 }
             }
             return $fieldsValue;
