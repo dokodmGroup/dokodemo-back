@@ -24,6 +24,11 @@ abstract class AbstractModel {
     protected $_primaryKey = "id";
 
     /**
+     * 事务开启计数器
+     */
+    static $_transactionCounter = 0;
+
+    /**
      * 返回Zend的适配器Adapter
      * 
      * @return \Zend\Db\Adapter\Adapter
@@ -66,21 +71,30 @@ abstract class AbstractModel {
      * 开启事务
      */
     public function beginTransaction() {
-        $this->_getAdapter()->getDriver()->getConnection()->beginTransaction();
+        if (self::$_transactionCounter == 0) {
+            $this->_getAdapter()->getDriver()->getConnection()->beginTransaction();
+        }
+        self::$_transactionCounter++;
     }
 
     /**
      * 提交事务
      */
     public function commit() {
-        $this->_getAdapter()->getDriver()->getConnection()->commit();
+        self::$_transactionCounter--;
+        if (self::$_transactionCounter == 0) {
+            $this->_getAdapter()->getDriver()->getConnection()->commit();
+        }
     }
 
     /**
      * 回滚事务
      */
     public function rollback() {
-        $this->_getAdapter()->getDriver()->getConnection()->rollback();
+        if (self::$_transactionCounter > 0) {
+            self::$_transactionCounter = 0;
+            $this->_getAdapter()->getDriver()->getConnection()->rollback();
+        }
     }
 
     /**
