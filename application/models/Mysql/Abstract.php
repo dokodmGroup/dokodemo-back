@@ -91,8 +91,8 @@ abstract class AbstractModel {
      * 回滚事务
      */
     public function rollback() {
-        if (self::$_transactionCounter > 0) {
-            self::$_transactionCounter = 0;
+        self::$_transactionCounter--;
+        if (self::$_transactionCounter == 0) {
             $this->_getAdapter()->getDriver()->getConnection()->rollback();
         }
     }
