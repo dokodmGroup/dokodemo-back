@@ -27,24 +27,29 @@ abstract class AbstractModel {
      * 事务开启计数器
      */
     static $_transactionCounter = 0;
+    
+    /**
+     * Zend 的适配器
+     * 
+     * @var \Zend\Db\Adapter\Adapter
+     */
+    static $dbAdapter = null;
 
     /**
-     * 返回Zend的适配器Adapter
+     * 返回 Zend 的适配器
      * 
      * @return \Zend\Db\Adapter\Adapter
      */
     public function _getAdapter() {
-        static $dbAdapter = null;
-
-        if (!$dbAdapter) {
+        if (!self::$dbAdapter) {
             $conf = \Yaf\Registry::get('config')->get('resources.database.params');
             if (!$conf) {
                 throw new \Exception('数据库连接必须设置');
             }
-            $dbAdapter = new \Zend\Db\Adapter\Adapter($conf->toArray());
+            self::$dbAdapter = new \Zend\Db\Adapter\Adapter($conf->toArray());
         }
 
-        return $dbAdapter;
+        return self::$dbAdapter;
     }
 
     /**
