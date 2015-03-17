@@ -135,8 +135,7 @@ class AbstractModel {
     }
 
     /**
-     * 获取字段的值
-     * 如果该字段没有值，则返回null
+     * 获取字段的值，如果该字段没有值，则返回null
      * 
      * @param string $fieldName
      * @return mix
@@ -164,9 +163,17 @@ class AbstractModel {
     /**
      * 获取没有校验过的字段提示信息
      * 
+     * @params string $fieldName
      * @return array
      */
-    public function getMessages() {
+    public function getMessages($fieldName = null) {
+        if ($fieldName) {
+            if ($this->_fields[$fieldName]['is_validate']) {
+                return null;
+            }
+            return $this->_fields[$fieldName]['message'];
+        }
+
         $fieldsMessage = array();
         foreach ($this->_fields as $field) {
             if (!$field['is_validate']) {
@@ -222,7 +229,7 @@ class AbstractModel {
      */
     public function setRequire($fieldName, $isRequire) {
         $this->_validateFieldExist($fieldName);
-        $this->setFiledsAttr($fieldName, array('requrie' => $isRequire));
+        $this->setFiledsAttr($fieldName, array('require' => $isRequire));
     }
 
     /**
