@@ -1,4 +1,4 @@
-文档参考地址：[php yaf框架扩展实践](http://www.01happy.com/php-yaf-ext-preface/)
+文档已经全部更新，参考地址：[php yaf框架扩展实践](http://www.01happy.com/php-yaf-ext-preface/)
 
 早年使用zend framework开发的时候非常爽，各种类库非常齐全，官方文档介绍也很详细。但是当访问量上来的时候，每次到晚上服务器负载就直飙上来导致服务器挂掉。后来和大家一起去找原因，才发现原来zend framework性能非常低。一开始的时候尝试把访问频繁的接口进行裸写，但是这只是临时做法，长远来看没有框架的约束后续的开发就会越来越乱。
 
