@@ -99,8 +99,16 @@ class AbstractModel {
      */
     public function validate() {
         foreach ($this->_fields as $fieldName => $field) {
-            if (!$field["require"] && !isset($field["value"])) {
-                continue;
+            if (!$field["require"]) {
+                if (!isset($field["value"])) {
+                    continue;
+                }
+                if (is_string($field["value"]) && strlen($field["value"]) == 0) {
+                    continue;
+                }
+                if (is_array($field["value"]) && !$field["value"]) {
+                    continue;
+                }
             }
             if ($field["require"] &&
                     !in_array($field["value"], array(0, "0"), true) &&
