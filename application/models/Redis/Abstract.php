@@ -64,7 +64,10 @@ class AbstractModel {
      * @return string
      */
     private function _addPrefix($key) {
-        return self::$prefix . self::DELIMITER . $key;
+        if (self::$prefix) {
+            return self::$prefix . self::DELIMITER . $key;
+        }
+        return $key;
     }
 
     /**
