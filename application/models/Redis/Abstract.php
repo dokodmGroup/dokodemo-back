@@ -84,6 +84,7 @@ class AbstractModel {
      * 获取keys
      * 
      * @param string $pattern
+     * @reutnr array
      */
     public function keys($pattern) {
         return $this->getRedis()->keys($pattern);
