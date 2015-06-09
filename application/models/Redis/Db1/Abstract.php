@@ -1,6 +1,6 @@
 <?php
 
-namespace Redis\Db0;
+namespace Redis\Db1;
 
 /**
  * redis操作类

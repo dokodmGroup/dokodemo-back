@@ -20,6 +20,20 @@ class AbstractModel {
     protected $_db = 0;
 
     /**
+     * 前缀
+     * 
+     * @var type 
+     */
+    protected $_prefix = "";
+
+    /**
+     * redis连接对象，未选择库的
+     * 
+     * @var \Redis
+     */
+    static $redis;
+
+    /**
      * 获取redis连接
      * 
      * @staticvar null $redis
@@ -27,20 +41,16 @@ class AbstractModel {
      * @throws \Exception
      */
     public function getRedis() {
-        static $redis = null;
-
-        if (!$redis) {
+        if (!self::$redis) {
             $conf = \Yaf\Registry::get('config')->get('redis.database.params');
             if (!$conf) {
                 throw new \Exception('redis连接必须设置');
             }
-
-            $redis = new \Redis();
-            $redis->connect($conf['host'], $conf['port']);
-            $redis->select($this->_db);
+            self::$redis = new \Redis();
+            self::$redis->connect($conf['host'], $conf['port']);
         }
-
-        return $redis;
+        self::$redis->select($this->_db);
+        return self::$redis;
     }
 
     /**
