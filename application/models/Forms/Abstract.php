@@ -36,7 +36,7 @@ class AbstractModel {
     public function setData($data) {
         foreach ($this->_fields as $k => $v) {
             if (array_key_exists($k, $data)) {
-                $this->_fields[$k]['value'] = trim($data[$k]);
+                $this->_fields[$k]['value'] = is_string($data[$k]) ? trim($data[$k]) : $data[$k];
                 continue;
             }
         }
