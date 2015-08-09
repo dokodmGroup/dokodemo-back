@@ -120,6 +120,14 @@ class AbstractModel {
                 $this->_fields[$fieldName]["is_validate"] = false;
                 continue;
             }
+            
+            //这个是html标签的校验，通常在任何用户的输入中都要过滤
+            //这里暂时注释掉
+//            if (is_string($field["value"]) && $this->_valiateHtmlTag($field["value"])) {
+//                $this->_fields[$fieldName]["is_validate"] = false;
+//                continue;
+//            }
+
             if (!empty($field['validate'])) {
                 foreach ($field['validate'] as $validate) {
                     $validateMethodName = '_validateFieldValue' . $validate["type"];
@@ -147,7 +155,7 @@ class AbstractModel {
     }
 
     /**
-     * 获取字段的值，如果该字段没有值，则返回null
+     * 获取字段的值
      * 
      * @param string $fieldName
      * @return mix
@@ -175,7 +183,6 @@ class AbstractModel {
     /**
      * 获取没有校验过的字段提示信息
      * 
-     * @params string $fieldName
      * @return array
      */
     public function getMessages($fieldName = null) {
@@ -365,6 +372,28 @@ class AbstractModel {
     }
 
     /**
+     * 日期校验器
+     * 
+     * @return boolean
+     */
+    private function _validateFieldValueDate($fieldName, $validate) {
+        $field   = $this->_fields[$fieldName];
+        $options = array("value" => $field["value"]);
+        if (isset($validate["formats"])) {
+            $options["formats"] = $validate["formats"];
+        }
+        if ($this->_validateDate($options)) {
+            $this->_fields[$fieldName]["is_validate"] = true;
+            return true;
+        }
+        if (isset($validate["msg"])) {
+            $this->setFieldMessage($fieldName, $validate["msg"]);
+        }
+        $this->_fields[$fieldName]["is_validate"] = false;
+        return false;
+    }
+
+    /**
      * 校验字符串长度
      * 
      * @param array $options
@@ -425,6 +454,41 @@ class AbstractModel {
             return false;
         }
         return true;
+    }
+
+    /**
+     * 校验日期格式是否正确
+     * 
+     * @param array $options
+     * @return boolean
+     */
+    protected function _validateDate($options) {
+        $date    = $options['value'];
+        $formats = $options["formats"];
+
+        $unixTime = strtotime($date);
+        if (!$unixTime) { //strtotime转换不对，日期格式显然不对。
+            return false;
+        }
+
+        //校验日期的有效性，只要满足其中一个格式就OK
+        foreach ($formats as $format) {
+            if (date($format, $unixTime) == $date) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 校验是否包含html和php标签
+     * 
+     * @param string $str
+     * @return boolean
+     */
+    public function _valiateHtmlTag($str) {
+        return $str != strip_tags($str);
     }
 
 }
