@@ -1,14 +1,21 @@
 <?php
 
-namespace Our\Test\PHPUnit;
+namespace Test\PHPUnit;
 
 class TestCase extends \PHPUnit_Framework_TestCase {
+
+    /**
+     * yaf运行实例
+     * 
+     * @var \Yaf\Application
+     */
+    protected $_application = null;
 
     /**
      * 构造方法，调用application实例化方法
      */
     public function __construct() {
-        $this->getApplication();
+        $this->_application = $this->getApplication();
         parent::__construct();
     }
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace Our\Test\PHPUnit;
+namespace Test\PHPUnit;
 
-require_once APPLICATION_PATH . '/tests/application/library/Our/Test/PHPUnit/TestCase.php';
+require_once APPLICATION_PATH . '/tests/application/library/Test/PHPUnit/TestCase.php';
 
-class ControllerTestCase extends \Our\Test\PHPUnit\TestCase {
+class ControllerTestCase extends \Test\PHPUnit\TestCase {
 
     protected function _dispatch($request) {
         try {
