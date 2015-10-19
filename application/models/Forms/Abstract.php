@@ -87,6 +87,10 @@ class AbstractModel {
                     if (!isset($validate["type"])) {
                         throw new \Exception("field " . $k . " validate type is not set");
                     }
+                    if ($validate['type'] == "set" &&
+                            (!isset($validate['set']) || !is_array($validate['set']))) {
+                        throw new \Exception("field " . $k . " validate set is not set");
+                    }
                 }
             }
         }
@@ -120,7 +124,7 @@ class AbstractModel {
                 $this->_fields[$fieldName]["is_validate"] = false;
                 continue;
             }
-            
+
             //这个是html标签的校验，通常在任何用户的输入中都要过滤
             //这里暂时注释掉
 //            if (is_string($field["value"]) && $this->_valiateHtmlTag($field["value"])) {
@@ -383,6 +387,24 @@ class AbstractModel {
             $options["formats"] = $validate["formats"];
         }
         if ($this->_validateDate($options)) {
+            $this->_fields[$fieldName]["is_validate"] = true;
+            return true;
+        }
+        if (isset($validate["msg"])) {
+            $this->setFieldMessage($fieldName, $validate["msg"]);
+        }
+        $this->_fields[$fieldName]["is_validate"] = false;
+        return false;
+    }
+
+    /**
+     * 集合校验器
+     * 
+     * @return boolean
+     */
+    private function _validateFieldValueSet($fieldName, $validate) {
+        $field = $this->_fields[$fieldName];
+        if (in_array($field['value'], $validate['set'])) {
             $this->_fields[$fieldName]["is_validate"] = true;
             return true;
         }

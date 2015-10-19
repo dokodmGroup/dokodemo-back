@@ -62,6 +62,14 @@ class DemoModel extends \Forms\AbstractModel {
                 array("type" => "int", "max" => "100", "msg" => "demo6不正确")
             ),
         ),
+        'demo7' => array(
+            'label'    => 'demo7',
+            'name'     => 'demo7',
+            'require'  => true,
+            "validate" => array(
+                array("type" => "set", "set" => array(10, 20), "msg" => "demo7不正确")
+            ),
+        ),
     );
 
     /**
