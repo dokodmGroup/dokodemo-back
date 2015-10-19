@@ -126,6 +126,7 @@ abstract class AbstractModel {
      */
     public function fetchAll($columns = null, $where = null, $order = null, $count = null, $offset = null, $group = null) {
         $adapter = $this->_getAdapter();
+        $sql     = new \Zend\Db\Sql\Sql($adapter, $this->_tableName);
         $select  = $this->_getDbSelect();
         if ($columns) {
             $select->columns($columns);
@@ -145,7 +146,9 @@ abstract class AbstractModel {
         if ($group) {
             $select->group($group);
         }
-        $selectString = $select->getSqlString($adapter->getPlatform());
+        $selectString = $sql->getSqlStringForSqlObject($select);
+//        echo $selectString;
+//        echo "<br />";
         $rows         = $adapter->query($selectString, $adapter::QUERY_MODE_EXECUTE)->toArray();
 
         return $rows;
