@@ -22,7 +22,8 @@ class ErrorModel {
             }
             $message = $codeConfig[$code];
         }
-        throw new \Exception($message, $code);
+
+        throw new \Error\OurExceptionModel($message, $code);
     }
 
 }
