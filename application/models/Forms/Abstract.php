@@ -35,10 +35,20 @@ class AbstractModel {
      */
     public function setData($data) {
         foreach ($this->_fields as $k => $v) {
-            if (array_key_exists($k, $data)) {
-                $this->_fields[$k]['value'] = is_string($data[$k]) ? trim($data[$k]) : $data[$k];
+            if (!array_key_exists($k, $data)) {
                 continue;
             }
+            if (is_string($data[$k])) {
+                //空字符串并且该字段有设置默认值则不进行设置
+                if (strlen(trim($data[$k])) == 0 &&
+                        isset($this->_fields[$k]['default']) &&
+                        strlen($this->_fields[$k]['default']) > 0) {
+                    continue;
+                }
+                $this->_fields[$k]['value'] = trim($data[$k]);
+                continue;
+            }
+            $this->_fields[$k]['value'] = $data[$k];
         }
     }
 
