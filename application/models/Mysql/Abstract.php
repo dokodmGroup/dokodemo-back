@@ -27,7 +27,7 @@ abstract class AbstractModel {
      * 事务开启计数器
      */
     static $_transactionCounter = 0;
-    
+
     /**
      * Zend 的适配器
      * 
@@ -110,7 +110,11 @@ abstract class AbstractModel {
      */
     public function find($id) {
         $resultSet = $this->_getDbTableGateway()->select(array($this->_primaryKey => $id));
-        return $resultSet->current();
+        $result    = $resultSet->current();
+        if ($result) {
+            return (array) $result;
+        }
+        return $result;
     }
 
     /**
