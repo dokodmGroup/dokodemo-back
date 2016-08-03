@@ -10,6 +10,10 @@ namespace Mysql;
 abstract class AbstractModel {
 
     /**
+     * ResultSet返回类型
+     */
+    const RESULT_SET_RETURN_TYPE_ARRAY  = 'array';
+    /**
      * 表名
      * 
      * @var string
@@ -58,7 +62,8 @@ abstract class AbstractModel {
      * @return \Zend\Db\TableGateway\TableGateway
      */
     protected function _getDbTableGateway() {
-        $tableGateway = new \Zend\Db\TableGateway\TableGateway($this->_tableName, $this->_getAdapter());
+        $resultSet    = new \Zend\Db\ResultSet\ResultSet(self::RESULT_SET_RETURN_TYPE_ARRAY);
+        $tableGateway = new \Zend\Db\TableGateway\TableGateway($this->_tableName, $this->_getAdapter(), null, $resultSet);
         return $tableGateway;
     }
 
@@ -151,8 +156,6 @@ abstract class AbstractModel {
             $select->group($group);
         }
         $selectString = $sql->getSqlStringForSqlObject($select);
-//        echo $selectString;
-//        echo "<br />";
         $rows         = $adapter->query($selectString, $adapter::QUERY_MODE_EXECUTE)->toArray();
 
         return $rows;
