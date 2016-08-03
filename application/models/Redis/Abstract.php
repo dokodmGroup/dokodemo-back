@@ -52,6 +52,7 @@ class AbstractModel {
 
             self::$redis = new \Redis();
             self::$redis->connect($conf['host'], $conf['port']);
+            
             if(!empty($conf['password'])){
                 self::$redis->auth($conf['password']);
             }
