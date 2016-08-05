@@ -12,7 +12,8 @@ abstract class AbstractModel {
     /**
      * ResultSet返回类型
      */
-    const RESULT_SET_RETURN_TYPE_ARRAY  = 'array';
+    const RESULT_SET_RETURN_TYPE_ARRAY = 'array';
+
     /**
      * 表名
      * 
@@ -29,6 +30,8 @@ abstract class AbstractModel {
 
     /**
      * 事务开启计数器
+     * mysql本身不支持嵌套事务,这里使用计数器来支持嵌套事务
+     * 要求事务有begin就一定要有commit或者rollback
      */
     static $_transactionCounter = 0;
 
