@@ -7,29 +7,26 @@ class ErrorController extends \Our\Controller_Abstract {
 
     public function init() {
         \Yaf\Dispatcher::getInstance()->disableView();
+        header('Content-Type: application/json;charset=utf-8,version=0.0.1');
     }
 
     public function errorAction($exception) {
+        $dispatcher = \Yaf\Dispatcher::getInstance();
+        $data = [
+            'code' => $exception->getCode(),
+            'infomation' => '路由分发失败', 
+            'message' => $exception->getMessage(),
+            'trace' => $exception->getTrace(),
+        ];
         if ($exception->getCode() > 100000) {
             //这里可以捕获到应用内抛出的异常
-            echo $exception->getCode();
-            echo $exception->getMessage();
+            http_response_code(500);
             return;
+        } else {
+            http_response_code($exception->getCode());
         }
-        switch ($exception->getCode()) {
-            case 404://404
-            case 515:
-            case 516:
-            case 517:
-                //输出404
-                header(\Our\Common::getHttpStatusCode(404));
-                echo '404';
-                exit();
-                break;
-            default :
-                break;
-        }
-        throw $exception;
+        echo json_encode($data);
+        return;
     }
 
 }

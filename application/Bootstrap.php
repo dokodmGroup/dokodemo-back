@@ -21,11 +21,19 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
      * @param Yaf_Dispatcher $dispatcher
      */
     public function _initRoute(\Yaf\Dispatcher $dispatcher) {
+        $router = \Yaf\Dispatcher::getInstance()->getRouter();
         $config = new \Yaf\Config\Ini(APPLICATION_PATH . '/conf/route.ini', 'common');
         if ($config->routes) {
-            $router = \Yaf\Dispatcher::getInstance()->getRouter();
             $router->addConfig($config->routes);
         }
+        $route = new \Yaf\Route\Rewrite(
+            '/portal/Hello', 
+            ['controller' => 'Index', 'action' => 'index']
+        );
+        $router->addRoute('portal', $route);
+        // $resource = new \Yaf\Route\Rewrite(
+            
+        // );
     }
 
     /**
