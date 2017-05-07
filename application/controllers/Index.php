@@ -1,6 +1,6 @@
 <?php
 
-class IndexController extends \Our\Controller_AbstractApi {
+class IndexController extends \Our\Controller_AbstractRest {
 
     public function init()
     {

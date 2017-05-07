@@ -14,7 +14,7 @@ class ErrorController extends \Our\Controller_Abstract {
         $dispatcher = \Yaf\Dispatcher::getInstance();
         $data = [
             'code' => $exception->getCode(),
-            'infomation' => '路由分发失败', 
+            'infomation' => '接口分发失败，请检查请求是否正确', 
             'message' => $exception->getMessage(),
             'trace' => $exception->getTrace(),
         ];
@@ -23,7 +23,7 @@ class ErrorController extends \Our\Controller_Abstract {
             http_response_code(500);
             return;
         } else {
-            http_response_code($exception->getCode());
+            http_response_code('404');
         }
         echo json_encode($data);
         return;

@@ -30,10 +30,12 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
             '/portal/Hello', 
             ['controller' => 'Index', 'action' => 'index']
         );
-        $router->addRoute('portal', $route);
-        // $resource = new \Yaf\Route\Rewrite(
-            
-        // );
+        $router->addRoute('portal-hello', $route);
+        $user = new \Yaf\Route\Rewrite(
+            '/portal/User/:id',
+            ['module' => 'Index','controller' => 'User', 'action' => 'info']
+        );
+        $router->addRoute('portal-user', $user);
     }
 
     /**
