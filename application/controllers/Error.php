@@ -14,14 +14,13 @@ class ErrorController extends \Our\Controller_Abstract {
         $dispatcher = \Yaf\Dispatcher::getInstance();
         $data = [
             'code' => $exception->getCode(),
-            'infomation' => '接口分发失败，请检查请求是否正确', 
+            'infomation' => '作业失败，请检查请求是否正确', 
             'message' => $exception->getMessage(),
             'trace' => $exception->getTrace(),
         ];
-        if ($exception->getCode() > 100000) {
+        if ($exception->getCode() > 1000) {
             //这里可以捕获到应用内抛出的异常
             http_response_code(500);
-            return;
         } else {
             http_response_code('404');
         }

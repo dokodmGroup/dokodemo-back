@@ -25,8 +25,8 @@ class IndexController extends \Our\Controller_AbstractRest {
                 ->or
                 ->like('field1', '0');
         });
-        // echo json_encode($result);
-        $dao->debugDumpParams();
+        echo json_encode($result);
+        // $dao->debugDumpParams();
     }
 
 }
