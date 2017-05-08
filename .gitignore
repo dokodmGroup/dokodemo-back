@@ -2,3 +2,5 @@
 *.DS_Store
 /public/
 phpunit
+/vendor/
+composer.lock

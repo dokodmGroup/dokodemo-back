@@ -38,6 +38,11 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
         $router->addRoute('portal-user', $user);
     }
 
+    public function _initAutoload(\Yaf\Dispatcher $dispatcher) {
+        // Composer 支援
+        require APPLICATION_PATH . '/vendor/autoload.php';
+    }
+
     /**
      * 获取url.ini配置的地址
      * 

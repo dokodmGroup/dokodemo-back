@@ -1,0 +1,14 @@
+{
+    "name": "dokodemo/dokodemo-back",
+    "description": "Project Dokodemo, a content manager system for bangumi, commic and game! Power by iceup/yaf.",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Kanzaki Tsukasa",
+            "email": "tsukasa.kzk@gmail.com"
+        }
+    ],
+    "require": {
+        "phpmailer/phpmailer": "^5.2"
+    }
+}

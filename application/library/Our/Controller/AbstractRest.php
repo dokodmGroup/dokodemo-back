@@ -4,12 +4,13 @@ namespace Our;
 
 abstract class Controller_AbstractRest extends \Our\Controller_AbstractApi {
 
-    private $_method;
+    protected $_method;
+    protected $_request;
 
     public function init() {
         parent::init();
-        $request = \Yaf\Dispatcher::getInstance()->getRequest();
-        $this->_method = $request->getMethod();
+        $this->_request = \Yaf\Dispatcher::getInstance()->getRequest();
+        $this->_method = $this->_request->getMethod();
     }
 
     public function infoAction()
@@ -28,7 +29,7 @@ abstract class Controller_AbstractRest extends \Our\Controller_AbstractApi {
                 break;
         }
         if (method_exists($this, $action)) {
-            return $this->$action;
+            return $this->$action($this->_request);
         } else {
             throw new \Yaf\Exception\LoadFailed\Action('请求方法响应动作不存在');
         }
