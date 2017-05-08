@@ -34,4 +34,23 @@ abstract class Controller_AbstractRest extends \Our\Controller_AbstractApi {
             throw new \Yaf\Exception\LoadFailed\Action('请求方法响应动作不存在');
         }
     }
+
+    public function indexAction()
+    {
+        switch ($this->_method) {
+            case 'GET':
+                $action = 'index';
+                break;
+            case 'POST':
+                $action = 'save';
+                break;
+            default:
+                break;
+        }
+        if (method_exists($this, $action)) {
+            return $this->$action($this->_request);
+        } else {
+            throw new \Yaf\Exception\LoadFailed\Action('请求方法响应动作不存在');
+        }
+    }
 }
