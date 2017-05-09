@@ -61,7 +61,7 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
                 case 'application/x-www-form-urlencoded':
                     if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
                         try {
-                            $this->parsePut();
+                            @$this->parsePut();
                         } catch (\Exception $e) {
                             
                         }
