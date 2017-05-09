@@ -207,17 +207,22 @@ class ImageController extends \Our\Controller_AbstractRest {
         return true;
     }
 
-    private static function createTempfileDirectory(): bool
+    private static function createTempfileDirectory(string &$errorMsg = null): bool
     {
+        $mkrs = false;
         try {
             if (file_exists('./temp') === false) {
-                mkdir('./temp');
+                $mkrs = @mkdir('./temp');
+                $err_msg = error_get_last();
+                if ($mkrs === false) {
+                    $errorMsg = error_get_last();
+                }
             }
         } catch (\Exception $e) {
-            header('X-Error-Msg: ' . urlencode($e->getMessage()));
+            $errorMsg = $e->getMessage();
             return false;
         }
-        return true;
+        return $mkrs;
     }
 
     private static function copyStandardInputToFile()
