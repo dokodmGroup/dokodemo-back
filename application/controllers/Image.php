@@ -44,12 +44,16 @@ class ImageController extends \Our\Controller_AbstractRest {
     }
 
     public function put(\Yaf\Request\Http $request) {
+
         session_start();
-        // header('Access-Control-Allow-Origin: *');
         $session    = session_id();
         $input_path = 'php://input';
-        self::createTempfileDirectory();
-        error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED & ~E_WARNING);
+        if ( !self::createTempfileDirectory($err_msg) ) {
+            return [500, '应用程式出错！', [
+                'information' => '应用程式出错',
+                'message' => $err_msg,
+            ]];
+        }
         $img_info = getimagesize($input_path);
         // 兼容代码块
         // 但会增加fopen和fclose带来的开销
@@ -217,6 +221,8 @@ class ImageController extends \Our\Controller_AbstractRest {
                 if ($mkrs === false) {
                     $errorMsg = error_get_last();
                 }
+            } else {
+                $mkrs = true;
             }
         } catch (\Exception $e) {
             $errorMsg = $e->getMessage();
