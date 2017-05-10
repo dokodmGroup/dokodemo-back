@@ -87,7 +87,6 @@ class ImageController extends \Our\Controller_AbstractRest {
                 'width'   => $img_info[0],
                 'height'  => $img_info[1],
                 'mime'    => $img_info['mime'],
-                'info'    => $img_info,
             ];
             return array(200, '上传成功', $data);
         }
@@ -145,7 +144,7 @@ class ImageController extends \Our\Controller_AbstractRest {
     }
 
     /**
-     * 提交修改并上传到 upyun
+     * 提交修改并上传资源池
      * Kanzaki Tsukasa 2017-04-06
      * @param array $image 要求有'name'字段的二维数组表
      * @param array $notProcessImage 因出错而没有处理的图片表
