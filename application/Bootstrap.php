@@ -31,16 +31,16 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
             ['controller' => 'Index', 'action' => 'index']
         );
         $router->addRoute('portal-hello', $route);
-        $resource_info = new \Yaf\Route\Rewrite(
-            '/portal/:target/:id',
-            ['module' => 'Index','controller' => ':target', 'action' => 'info']
-        );
-        $router->addRoute('portal-resource-info', $resource_info);
         $resource_index = new \Yaf\Route\Rewrite(
             '/portal/:target',
             ['module' => 'Index','controller' => ':target', 'action' => 'index']
         );
         $router->addRoute('portal-resource-info', $resource_index);
+        $resource_info = new \Yaf\Route\Rewrite(
+            '/portal/:target/:id',
+            ['module' => 'Index','controller' => ':target', 'action' => 'info']
+        );
+        $router->addRoute('portal-resource-info', $resource_info);
     }
 
     public function _initAutoload(\Yaf\Dispatcher $dispatcher) {
