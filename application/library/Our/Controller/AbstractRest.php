@@ -11,6 +11,7 @@ abstract class Controller_AbstractRest extends \Our\Controller_AbstractApi {
         parent::init();
         $this->_request = \Yaf\Dispatcher::getInstance()->getRequest();
         $this->_method = $this->_request->getMethod();
+        header('Content-Type: application/json;charset=utf-8');
     }
 
     public function infoAction()
