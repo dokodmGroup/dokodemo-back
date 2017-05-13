@@ -4,3 +4,4 @@
 phpunit
 /vendor/
 composer.lock
+test.sh
