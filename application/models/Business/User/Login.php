@@ -2,10 +2,20 @@
 
 namespace Business\User;
 
+use \DAO\UserModel;
+
 /**
  * 用户登录业务
  */
 class LoginModel extends \Business\AbstractModel {
+
+    private $_userInfo = [];
+    private $_dao;
+
+    public function __construct()
+    {
+        $this->_dao = UserModel::getInstance();
+    }
 
     /**
      * 登录业务
@@ -13,30 +23,16 @@ class LoginModel extends \Business\AbstractModel {
      * @param array $params
      * @return
      */
-    public function login($params) {
-        if (!false) {
-            \Error\ErrorModel::throwException("100110");
+    public function checkAccount(string $account) : bool {
+        $result = $this->_dao->findByAccount($account);
+        if(!empty($result)) {
+            $this->_userInfo = $result;
+            return true;
+        } else {
+            return false;
         }
     }
 
-    /**
-     * 登录业务
-     * 
-     * @var \Business\User\LoginModel
-     */
-    private static $_instance = null;
-
-    /**
-     * 单例模式获取类实例
-     * 
-     * @return \Business\User\LoginModel
-     */
-    public static function getInstance() {
-        if (!(self::$_instance instanceof self)) {
-            self::$_instance = new self();
-        }
-
-        return self::$_instance;
-    }
+    
 
 }

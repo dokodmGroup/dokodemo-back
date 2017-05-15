@@ -2,10 +2,26 @@
 
 namespace DAO;
 
+
 /**
  * 用户数据层
  */
 class UserModel extends \DAO\AbstractModel {
+
+    private $_dbModel;
+
+    public function __construct() {
+        $this->_dbModel = \Mysql\UserModel::getInstance();
+    }
+    
+    /**
+     * 根据一定条件查找用户
+     */
+    public function find(mixed $opt) : array {
+        if (is_numeric($opt)) {
+            return $this->findByUserId($opt);
+        }
+    }
 
     /**
      * 根据用户编号查找数据
@@ -13,7 +29,7 @@ class UserModel extends \DAO\AbstractModel {
      * @param int $userId
      * @return array
      */
-    public function find($userId) {
+    private function findByUserId(int $userId) : array {
         $redis = \Redis\Db0\UserModel::getInstance();
         $user  = $redis->find($userId);
         if (!$user) {
@@ -24,6 +40,10 @@ class UserModel extends \DAO\AbstractModel {
             }
         }
         return $user;
+    }
+
+    public function findByAccount(string $account) : array {
+        return $this->_dbModel->findByAccount($account);
     }
 
     /**

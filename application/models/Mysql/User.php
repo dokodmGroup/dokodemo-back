@@ -19,23 +19,7 @@ class UserModel extends \Mysql\AbstractModel {
      * 
      * @var string
      */
-    protected $_primaryKey = 'user_id';
-
-    /**
-     * 重写父类fetchAll方法，定位到从库
-     * 
-     * @param array         $columns    需要查找的字段
-     * @param array         $where      筛选条件
-     * @param array         $order      排序条件
-     * @param int           $count      条数
-     * @param int           $offset     偏移量
-     * @param array         $group      分组条件
-     * @return array
-     */
-    public function fetchAll($columns = null, $where = null, $order = null, $count = null, $offset = null, $group = null) {
-        $slave = \Mysql\Slave\UserModel::getInstance();
-        return $slave->fetchAll($columns, $where, $order, $count, $offset, $group);
-    }
+    protected $_primaryKey = 'id';
 
     /**
      * 类实例
@@ -57,4 +41,19 @@ class UserModel extends \Mysql\AbstractModel {
         return self::$_instance;
     }
 
+    /**
+     * 使用DbTable网关来查询账户
+     */
+    public function findByAccount(string $account) : array {
+        $resultSet = $this->_getDbTableGateway()->select(function($select) use ($account) {
+            $select->columns(['id', 'account', 'create_time', 'status']);
+            $select->where(['account' => $account]);
+        });
+        $first = $resultSet->current();
+        if (!is_array($first)) {
+            return [];
+        } else {
+            return $first;
+        }
+    }
 }
