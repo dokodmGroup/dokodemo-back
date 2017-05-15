@@ -48,7 +48,7 @@ class LoginModel extends \Business\AbstractModel {
     public function checkPassword(string $password, int $id = null) : bool {
         if (is_null($id) && !empty($this->_userInfo['id'])) {
             $id = $this->_userInfo['id'];
-        } else {
+        } elseif (is_null($id)) {
             $this->_msg = '业务错误：没有载入用户信息！';
             return false;
         }

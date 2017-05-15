@@ -27,4 +27,22 @@ class SessionController extends \Our\Controller_AbstractRest {
             return [200, '', ['id' => $info['id']]];
         }
     }
+
+    public function update($request) {
+        $id = $request->getParam('id');
+        $password = $request->getParam('password', $_POST['password'] ?? '');
+
+        if (empty($password)) {
+            return [400, '缺少必要项：password'];
+        }
+        $login = new LoginModel();
+        $result = $login->checkPassword($password, $id);
+
+        if ($result === true) {
+            header('X-Token: ');
+            return [200, 'success'];
+        } else {
+            return [401, '登录失败', ['message' => $login->getMessage()]];
+        }
+    }
 }
