@@ -30,7 +30,20 @@ abstract class Controller_AbstractRest extends \Our\Controller_AbstractApi {
                 break;
         }
         if (method_exists($this, $action)) {
-            return $this->$action($this->_request);
+            $result = $this->$action($this->_request);
+            if (is_array($result)) {
+                try {
+                    header('X-Info: ' . urlencode($result[1]));
+                    http_response_code($result[0]);
+                    echo json_encode($result[2]);
+                } catch (\Exception $e) {
+                    header('X-Info: ' . urlencode('Error: The return result is array and do not validated'));
+                    http_response_code(500);
+                    echo json_encode([]);
+                }
+            } else {
+                return $result;
+            }
         } else {
             throw new \Yaf\Exception\LoadFailed\Action('请求方法响应动作不存在');
         }
@@ -49,7 +62,23 @@ abstract class Controller_AbstractRest extends \Our\Controller_AbstractApi {
                 break;
         }
         if (method_exists($this, $action)) {
-            return $this->$action($this->_request);
+            $result = $this->$action($this->_request);
+            if (is_array($result)) {
+                try {
+                    if (!isset($result[0]) || !isset($result[1])) {
+                        throw new \Exception();
+                    }
+                    header('X-Info: ' . urlencode($result[1]));
+                    http_response_code($result[0]);
+                    echo json_encode($result[2] ?? []);
+                } catch (\Exception $e) {
+                    header('X-Info: ' . urlencode('Error: The return result is array and do not validated'));
+                    http_response_code(500);
+                    echo json_encode([]);
+                }
+            } else {
+                return $result;
+            }
         } else {
             throw new \Yaf\Exception\LoadFailed\Action('请求方法响应动作不存在');
         }

@@ -35,7 +35,7 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
             '/portal/:target',
             ['module' => 'Index','controller' => ':target', 'action' => 'index']
         );
-        $router->addRoute('portal-resource-info', $resource_index);
+        $router->addRoute('portal-resource-index', $resource_index);
         $resource_info = new \Yaf\Route\Rewrite(
             '/portal/:target/:id',
             ['module' => 'Index','controller' => ':target', 'action' => 'info']
