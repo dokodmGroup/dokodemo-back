@@ -11,6 +11,7 @@ class LoginModel extends \Business\AbstractModel {
 
     private $_userInfo = [];
     private $_dao;
+    private $_msg = '';
 
     public function __construct()
     {
@@ -25,14 +26,47 @@ class LoginModel extends \Business\AbstractModel {
      */
     public function checkAccount(string $account) : bool {
         $result = $this->_dao->findByAccount($account);
-        if(!empty($result)) {
+        if(!empty($result) && $result['status'] === '1') {
             $this->_userInfo = $result;
             return true;
+        } elseif(!empty($result)) {
+            $this->_msg = '账号已被禁用，请联系站长或管理员';
+            return false;
         } else {
+            $this->_msg = '账号不存在，请检查你的电邮地址';
             return false;
         }
     }
 
-    
+    /**
+     * 获取模型内处理的提示信息
+     */
+    public function getMessage() : string {
+        return $str = (string) $this->_msg;
+    }
 
+    public function checkPassword(string $password, int $id = null) : bool {
+        if (is_null($id) && !empty($this->_userInfo['id'])) {
+            $id = $this->_userInfo['id'];
+        } else {
+            $this->_msg = '业务错误：没有载入用户信息！';
+            return false;
+        }
+
+        $result = $this->_dao->findByUserId($id);
+
+        if (!empty($result) && md5($password) === $result['password']) {
+            return true;
+        } elseif (empty($result)) {
+            $this->_msg = '账号信息不正确';
+            return false;
+        } else {
+            $this->_msg = '密码不正确';
+            return false;
+        }
+    }
+
+    public function fetchUserInfo() : array {
+        return (array) $this->_userInfo;
+    }
 }
