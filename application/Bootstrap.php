@@ -45,7 +45,7 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
 
     public function _initAutoload(\Yaf\Dispatcher $dispatcher) {
         // Composer 支援
-        require APPLICATION_PATH . '/vendor/autoload.php';
+        \Yaf\Loader::import(APPLICATION_PATH . '/vendor/autoload.php');
     }
 
     /**
