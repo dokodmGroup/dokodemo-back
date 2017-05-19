@@ -27,6 +27,7 @@ abstract class Controller_AbstractRest extends \Our\Controller_AbstractApi {
                 $action = 'delete';
                 break;
             default:
+                $action = '';
                 break;
         }
         if (method_exists($this, $action)) {
@@ -62,6 +63,7 @@ abstract class Controller_AbstractRest extends \Our\Controller_AbstractApi {
                 $action = 'save';
                 break;
             default:
+                $action = '';
                 break;
         }
         if (method_exists($this, $action)) {

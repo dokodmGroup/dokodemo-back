@@ -97,6 +97,20 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
         }
     }
 
+    public function _initCrossAccess(\Yaf\Dispatcher $dispatcher) 
+    {
+        if (isset($_SERVER['HTTP_ORIGIN'])) {
+            header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);    
+        }
+        header('Access-Control-Allow-Credentials: true');
+        header('Access-Control-Allow-Methods: GET,POST,OPTIONS,PUT,DELETE');
+        header('Access-Control-Allow-Headers: DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,X-Token');
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(204);
+            exit();
+        }
+    }
+
     /**
      * 获取url.ini配置的地址
      * 
