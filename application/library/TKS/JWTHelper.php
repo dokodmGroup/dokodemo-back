@@ -16,6 +16,55 @@ class JWTHelper
     private static $issuer = 'Dokodemo Content Manage System';
     // 检测 JWT 是否过期，仅内部使用
     private static $outOfTtl = false;
+    // JWT 实体
+    private static $jwt = '';
+
+    public static function setTtl(int $ttl)
+    {
+        self::$ttl = $ttl;
+    }
+
+    /**
+     * 创建 Token
+     *
+     * @param array $extData 扩展数据
+     * @return string
+     * Kanzaki Tsukasa
+     */
+    public static function createJWT(array $extData): string 
+    {
+        $header = self ::encodeHeader();
+        $payload = self::encodePayload($extData);
+        $body = "{$header}.{$payload}";
+        $signature = self::sign($body);
+        self::$jwt = "{$body}.{$signature}";
+        return $jwt = self::$jwt;
+    }
+
+    /**
+     * 校验 Token
+     * Token 格式不正确，或签名不对返回假
+     * @param string $jsonWebTokenString
+     * @param array $extData
+     * @return bool
+     * Kanzaki Tsukasa
+     */
+    public static function checkJWT(string $jsonWebTokenString, array &$extData = null): bool
+    {
+        $info = explode('.', $jsonWebTokenString);
+        if (count($info) ===  3) {
+            $body = "{$info[0]}.{$info[1]}";
+            if (self::sign($body) !== $info[2]) {
+                return false;
+            } else {
+                $payload = self::decodePayload($info[1]);
+                $extData = $payload['ext'];
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
 
     // 基础函数 START
     /**
