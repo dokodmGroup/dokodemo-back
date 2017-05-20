@@ -27,13 +27,19 @@ class ImageController extends \Our\Controller_AbstractRest {
             $result = $this->$action($this->_request);
             if (is_array($result)) {
                 try {
-                    header('X-Info: ' . urlencode($result[1]));
-                    http_response_code($result[0]);
-                    echo json_encode($result[2]);
+                    if (!isset($result[0]) || !isset($result[1])) {
+                        throw new \Exception();
+                    }
+                    ResponseHelper::json(
+                        $result[0], 
+                        $result[1], 
+                        $result[2] ?? []
+                    );
                 } catch (\Exception $e) {
-                    header('X-Info: ' . urlencode('Error: The return result is array and do not validated'));
-                    http_response_code(500);
-                    echo json_encode([]);
+                    ResponseHelper::json(
+                        500, 
+                        'Error: The return result is array and do not validated'
+                    );
                 }
             } else {
                 return $result;
