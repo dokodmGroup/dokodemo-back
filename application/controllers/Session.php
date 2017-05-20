@@ -7,12 +7,13 @@ class SessionController extends \Our\Controller_AbstractRest {
     public function read()
     {
         $result = [];
-        \Business\Mail\SendModel::init();
-        echo json_encode(['result' => $result]);
+        // \Business\Mail\SendModel::init();
+        return [200, 'success'];
     }
 
     public function save($request) {
-        // 注意：Bootstrap 已做了 json 接收的兼容，但是 $request 对象并没有反应出来
+        // 注意：由于 YAF 的 POST 只读机制
+        // Bootstrap 已做了 json 接收的兼容，但 $request 对象并不会反应出来
         $account = $request->getPost('account', $_POST['account'] ?? '');
         if (empty($account)) {
             return [400, '缺少账号名'];

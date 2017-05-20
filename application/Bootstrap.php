@@ -1,5 +1,7 @@
 <?php
 
+use \TKS\ResponseHelper;
+
 /**
  * Bootstrap引导程序
  * 所有在Bootstrap类中定义的, 以_init开头的方法, 都会被依次调用
@@ -99,16 +101,32 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
 
     public function _initCrossAccess(\Yaf\Dispatcher $dispatcher) 
     {
-        if (isset($_SERVER['HTTP_ORIGIN'])) {
-            header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);    
-        }
-        header('Access-Control-Allow-Credentials: true');
-        header('Access-Control-Allow-Methods: GET,POST,OPTIONS,PUT,DELETE');
-        header('Access-Control-Allow-Headers: DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,X-Token');
+        ResponseHelper::setHeader('Access-Control-Allow-Origin', $_SERVER['HTTP_ORIGIN'] ?? '');
+        ResponseHelper::setHeader('Access-Control-Allow-Credentials', 'true');
+        ResponseHelper::setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE');
+        ResponseHelper::setHeader(
+            'Access-Control-Allow-Headers', 
+            implode(',',[
+                'DNT',
+                'X-Mx-ReqToken',
+                'Keep-Alive',
+                'User-Agent',
+                'X-Requested-With',
+                'If-Modified-Since',
+                'Cache-Control',
+                'Content-Type',
+                'X-Token',
+                'X-Tips'
+            ])
+        );
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-            http_response_code(204);
-            exit();
+            ResponseHelper::json(204);
         }
+    }
+
+    public function _initResponse()
+    {
+        ResponseHelper::setVersion('0.0.1');
     }
 
     /**
