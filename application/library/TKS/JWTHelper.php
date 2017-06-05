@@ -20,7 +20,7 @@ class JWTHelper
     private static $jwt = '';
 
     // 错误集
-    private $_errors = [];
+    private static $_errors = [];
 
     public static function setTtl(int $ttl)
     {
@@ -67,6 +67,11 @@ class JWTHelper
         } else {
             return false;
         }
+    }
+
+    public static function getErrors(): array
+    {
+        return self::$_errors;
     }
 
     // 基础函数 START
@@ -153,7 +158,7 @@ class JWTHelper
         // 私钥不正确会产生 warning 提示
         // 暂未知如何捕获，这样处理吧
         @openssl_sign($digest, $signature, $pkeyid);
-        $this->errors[] = error_get_last();
+        self::$_errors[] = error_get_last();
         return base64_encode($signature);
     }
 
