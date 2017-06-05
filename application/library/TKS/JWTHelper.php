@@ -19,6 +19,9 @@ class JWTHelper
     // JWT 实体
     private static $jwt = '';
 
+    // 错误集
+    private $_errors = [];
+
     public static function setTtl(int $ttl)
     {
         self::$ttl = $ttl;
@@ -139,15 +142,18 @@ class JWTHelper
     /**
      * 签名
      *
-     * @param mixed $body
+     * @param string $body
      * @return string
      * Kanzaki Tsukasa
      */
-    private static function sign(mixed $body): string
+    private static function sign(string $body): string
     {
-        $key = openssl_pkey_get_private('file://' . realpath(self::$privateKeyPath));
+        $pkeyid = openssl_pkey_get_private('file://' . realpath(self::$privateKeyPath));
         $digest = openssl_digest($body, self::$hashMethod);
-        openssl_sign($digest, $signature, $key);
+        // 私钥不正确会产生 warning 提示
+        // 暂未知如何捕获，这样处理吧
+        @openssl_sign($digest, $signature, $pkeyid);
+        $this->errors[] = error_get_last();
         return base64_encode($signature);
     }
 
