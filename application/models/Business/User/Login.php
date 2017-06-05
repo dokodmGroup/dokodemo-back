@@ -12,6 +12,7 @@ class LoginModel extends \Business\AbstractModel {
     private $_userInfo = [];
     private $_dao;
     private $_msg = '';
+    private $_accessField = ['id', 'account', 'create_time'];
 
     public function __construct()
     {
@@ -56,6 +57,7 @@ class LoginModel extends \Business\AbstractModel {
         $result = $this->_dao->findByUserId($id);
 
         if (!empty($result) && md5($password) === $result['password']) {
+            $this->_userInfo = $this->_dao->findByUserId($id);
             return true;
         } elseif (empty($result)) {
             $this->_msg = '账号信息不正确';
@@ -67,6 +69,13 @@ class LoginModel extends \Business\AbstractModel {
     }
 
     public function fetchUserInfo() : array {
-        return (array) $this->_userInfo;
+        if (empty($this->_userInfo)) {
+            return [];
+        }
+        $info = [];
+        foreach($this->_accessField as $field) {
+            $info[$field] = $this->_userInfo[$field] ?? '';
+        }
+        return $info;
     }
 }

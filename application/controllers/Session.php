@@ -1,6 +1,8 @@
 <?php
 
 use \Business\User\LoginModel;
+use \TKS\JWTHelper;
+use \TKS\ResponseHelper;
 
 class SessionController extends \Our\Controller_AbstractRest {
 
@@ -26,7 +28,7 @@ class SessionController extends \Our\Controller_AbstractRest {
             return [204, '账号不存在'];
         } else {
             $info = $login->fetchUserInfo();
-            return [200, '', ['id' => $info['id']]];
+            return [200, 'success', ['id' => $info['id']]];
         }
     }
 
@@ -41,7 +43,9 @@ class SessionController extends \Our\Controller_AbstractRest {
         $result = $login->checkPassword($password, $id);
 
         if ($result === true) {
-            header('X-Token: ');
+            $info = $login->fetchUserInfo();
+            $jwt = JWTHelper::createJWT($info);
+            ResponseHelper::addExtHeader('token', $jwt);
             return [200, 'success'];
         } else {
             return [401, '登录失败', ['message' => $login->getMessage()]];
