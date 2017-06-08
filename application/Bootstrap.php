@@ -119,7 +119,8 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
                 'X-Tips'
             ])
         );
-        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        if (isset($_SERVER['REQUEST_METHOD']) &&
+        $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
             ResponseHelper::json(204);
         }
     }
