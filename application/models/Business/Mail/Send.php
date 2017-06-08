@@ -5,21 +5,38 @@ use \PHPMailer;
 
 class SendModel extends \Business\AbstractModel {
 
-    public static function init()
+    private static $_instance = null;
+
+    public static function init(array $config)
     {
-        $mail = new \PHPMailer();
+        if (!self::configValidate($config)) {
+            throw new Exception('EMAIL CONFIG NOT VALIDATE.');
+            return;
+        }
+        $mail = self::getInstance();
         $mail->IsSMTP();
-        $mail->Port = 25;
-        $mail->Host = 'ssl://smtp.qq.com:465';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'shengjie@sj33333.com';
-        $mail->Password = 'sj2213@@!#';
-        $mail->From = 'shengjie@sj33333.com';
-        $mail->FromName = 'Sj Software';
-        $mail->CharSet = 'UTF-8';
-        $mail->Encoding = 'base64';
-        $mail->AddAddress('1572990728@qq.com', null);
-        $mail->Body = 'Hello Smtp Mail';
-        return $mail->Send();
+        $mail->Port = $config['port'];
+        $mail->Host = $config['host'];
+        $mail->CharSet = $config['charset'];
+        $mail->Encoding = $config['encoding'];
+    }
+
+
+    public static function getInstance(): PHPMailer
+    {
+        if (!(self::$_instance instanceof PHPMailer)) {
+            self::$_instance = new PHPMailer();
+        }
+
+        return self::$_instance;
+    }
+
+    private static function configValidate(array $config): bool
+    {
+        $field = [
+            'host', 'port', 'charset', 'encoding'
+        ];
+        $keys = array_keys($config);
+        return empty(array_diff($field, $keys));
     }
 }

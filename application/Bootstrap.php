@@ -1,6 +1,7 @@
 <?php
 
 use \TKS\ResponseHelper;
+use \Business\Mail\SendModel;
 
 /**
  * Bootstrap引导程序
@@ -128,6 +129,12 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
     public function _initResponse()
     {
         ResponseHelper::setVersion('0.0.1');
+    }
+
+    public function _initEmailSys()
+    {
+        $config = \Yaf\Registry::get('config')['email'] ?? [];
+        SendModel::init($config);
     }
 
     /**
