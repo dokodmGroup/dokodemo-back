@@ -2,7 +2,6 @@
 $user_info = posix_getpwuid(posix_geteuid());
 header('X-Php-User: ' . json_encode($user_info));
 error_reporting(E_ALL);
-ini_set('display_errors', '1'); // 显示错误信息
 date_default_timezone_set("Asia/Shanghai");
 mb_internal_encoding("UTF-8");
 define("APPLICATION_PATH", realpath(dirname(__FILE__) . '/../'));
