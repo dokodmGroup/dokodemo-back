@@ -134,7 +134,7 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
     public function _initEmailSys()
     {
         $config = \Yaf\Registry::get('config')['email'] ?? [];
-        SendModel::init($config);
+        SendModel::init($config->toArray());
     }
 
     /**
