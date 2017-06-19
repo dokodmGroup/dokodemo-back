@@ -120,6 +120,21 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
                 'X-Tips'
             ])
         );
+        ResponseHelper::setHeader(
+            'Access-Control-Expose-Headers', 
+            implode(',',[
+                'DNT',
+                'X-Mx-ReqToken',
+                'Keep-Alive',
+                'User-Agent',
+                'X-Requested-With',
+                'If-Modified-Since',
+                'Cache-Control',
+                'Content-Type',
+                'X-Token',
+                'X-Tips'
+            ])
+        );
         if (isset($_SERVER['REQUEST_METHOD']) &&
         $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
             ResponseHelper::json(204);
