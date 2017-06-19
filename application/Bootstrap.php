@@ -29,11 +29,6 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
         if ($config->routes) {
             $router->addConfig($config->routes);
         }
-        $route = new \Yaf\Route\Rewrite(
-            '/portal/Hello', 
-            ['controller' => 'Index', 'action' => 'index']
-        );
-        $router->addRoute('portal-hello', $route);
         $resource_index = new \Yaf\Route\Rewrite(
             '/portal/:target',
             ['module' => 'Index','controller' => ':target', 'action' => 'index']
@@ -44,6 +39,11 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
             ['module' => 'Index','controller' => ':target', 'action' => 'info']
         );
         $router->addRoute('portal-resource-info', $resource_info);
+        $route = new \Yaf\Route\Rewrite(
+            '/portal/Hello', 
+            ['controller' => 'Index', 'action' => 'index']
+        );
+        $router->addRoute('portal-hello', $route);
     }
 
     public function _initAutoload(\Yaf\Dispatcher $dispatcher) {
