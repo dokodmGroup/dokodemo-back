@@ -152,6 +152,13 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
         SendModel::init($config->toArray());
     }
 
+    public function _initBasesetting()
+    {
+        error_reporting(E_ERROR);
+        date_default_timezone_set("Asia/Shanghai");
+        mb_internal_encoding("UTF-8");
+    }
+
     /**
      * 获取url.ini配置的地址
      * 
