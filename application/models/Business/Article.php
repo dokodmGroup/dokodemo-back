@@ -6,8 +6,13 @@ use \DAO\ArticleModel as DAO;
 
 class ArticleModel extends AbstractModel
 {
+    const PORTAL = 1;
+    const ADMIN = 2;
+
     public static $pnum = 1;
     public static $psize = 15;
+    public static $condition = [];
+    public static $mode = 1;
 
     private static $_adminField = [
         'id',
@@ -46,9 +51,19 @@ class ArticleModel extends AbstractModel
         $pnum = is_numeric(self::$pnum) ? (int)self::$pnum : 1;
         $psize = is_numeric(self::$psize) ? (int)self::$psize : 15;
         $offset = $pnum * self::$psize - $psize;
+        $condition = self::$_softDeleteCondition;
+        if (!empty(self::$condition) && is_array(self::$condition)) {
+            $condition += self::$condition;
+        }
+
+        if (self::$mode === self::PORTAL) {
+            $field = self::$_portalField;
+        } else {
+            $field = self::$_adminField;
+        }
         return DAO::getInstance()->fetchAll(
-            self::$_portalField,
-            self::$_softDeleteCondition,
+            $field,
+            $condition,
             self::$_adminOrder,
             self::$psize,
             $offset

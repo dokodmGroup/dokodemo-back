@@ -13,6 +13,7 @@ class ArticleController extends \Our\Controller_AbstractRest {
 
     public function index($request)
     {
+        ArticleModel::$mode = ArticleModel::PORTAL;
         ArticleModel::$pnum = $request->get('pnum', '1');
         ArticleModel::$psize = $request->get('psize', '15');
         $result = ArticleModel::getList();
