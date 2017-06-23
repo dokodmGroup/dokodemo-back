@@ -1,15 +1,9 @@
 <?php
 
-use \TKS\ResponseHelper;
+use \Our\ResponseHelper as OURRH;
 use \Business\ArticleModel;
 
 class ArticleController extends \Our\Controller_AbstractRest {
-
-    public function read()
-    {
-        $result = [];
-        ResponseHelper::json(200, '', ['result' => $result]);
-    }
 
     public function index($request)
     {
@@ -17,14 +11,19 @@ class ArticleController extends \Our\Controller_AbstractRest {
         ArticleModel::$pnum = $request->get('pnum', '1');
         ArticleModel::$psize = $request->get('psize', '15');
         $result = ArticleModel::getList();
-        if (empty($result)) {
-            \TKS\ResponseHelper::json(204, '没有数据');
-        } else {
-            \TKS\ResponseHelper::json(200, 'success', [
-                'pnum' => \Business\ArticleModel::$pnum,
-                'psize' => \Business\ArticleModel::$psize,
-                'data' => $result
-            ]);
+        OURRH::list($result, ArticleModel::$pnum, ArticleModel::$psize);
+    }
+
+    public function read($request)
+    {
+        $id = $request->getParam('id');
+        if(!is_numeric($id)) {
+            OURRH::tips(400, 'BAD REQUEST');
         }
+        ArticleModel::$mode = ArticleModel::PORTAL;
+        ArticleModel::$pnum = $request->get('pnum', '1');
+        ArticleModel::$psize = $request->get('psize', '15');
+        $result = ArticleModel::getList();
+        OURRH::item($result[0]);
     }
 }

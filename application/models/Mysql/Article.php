@@ -41,24 +41,6 @@ class ArticleModel extends \Mysql\AbstractModel {
         return self::$_instance;
     }
 
-    /**
-     * 使用DbTable网关来查询账户
-     * 返回包含密码字段，请留意使用
-     */
-    public function findByAccount(string $account) : array {
-        $resultSet = $this->_getDbTableGateway()->select(function($select) use ($account) {
-            $select->columns(['id', 'account', 'password', 'create_time', 'status']);
-            $select->where(['account' => $account]);
-            $select->where('`delete_time` is null');
-        });
-        $first = $resultSet->current();
-        if (!is_array($first)) {
-            return [];
-        } else {
-            return $first;
-        }
-    }
-
     public function find($id) : array {
         $resultSet = $this->_getDbTableGateway()->select(function ($select) use ($id) {
             $select->columns(['id', 'account', 'password', 'create_time', 'status']);

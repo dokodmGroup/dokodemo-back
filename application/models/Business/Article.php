@@ -46,7 +46,7 @@ class ArticleModel extends AbstractModel
     private static $_adminOrder = 'id desc';
 
 
-    public static function getList()
+    public static function getList(): array
     {
         $pnum = is_numeric(self::$pnum) ? (int)self::$pnum : 1;
         $psize = is_numeric(self::$psize) ? (int)self::$psize : 15;
@@ -68,5 +68,10 @@ class ArticleModel extends AbstractModel
             self::$psize,
             $offset
         );
+    }
+
+    public static function getItem(int $id): array
+    {
+        
     }
 }
