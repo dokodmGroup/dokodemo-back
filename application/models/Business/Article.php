@@ -22,6 +22,17 @@ class ArticleModel extends AbstractModel
         'status'
     ];
 
+    private static $_portalField = [
+        'id',
+        'uid',
+        'title',
+        'subtitle',
+        'source',
+        'source_url',
+        'context',
+        'publish_time',
+    ];
+
     private static $_softDeleteCondition = [
         'status > -1',
         'id < 10',
@@ -36,7 +47,7 @@ class ArticleModel extends AbstractModel
         $psize = is_numeric(self::$psize) ? (int)self::$psize : 15;
         $offset = $pnum * self::$psize - $psize;
         return DAO::getInstance()->fetchAll(
-            self::$_adminField,
+            self::$_portalField,
             self::$_softDeleteCondition,
             self::$_adminOrder,
             self::$psize,
