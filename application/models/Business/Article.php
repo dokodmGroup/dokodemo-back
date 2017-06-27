@@ -6,6 +6,8 @@ use \DAO\ArticleModel as DAO;
 
 class ArticleModel extends AbstractModel
 {
+    use \TKS\traits\LabelHelper;
+
     const PORTAL = 1;
     const ADMIN = 2;
 
