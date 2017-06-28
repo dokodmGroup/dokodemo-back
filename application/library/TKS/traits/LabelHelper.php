@@ -7,12 +7,23 @@ namespace TKS\traits;
  */
 trait LabelHelper
 {
-    public static function hello()
+    public static $keyField;
+
+    public static function labelFilterWithDb($key, array &$condition = null)
     {
+        $field = self::$keyField ?? 'label';
         if (!self::validateClass()) {
-            return;
+            return false;
         }
-        echo 'World';
+        $condition = ($condition ?: []);
+        if (is_array($key)) {
+            foreach($key as $k) {
+                return self::labelFilter($k);
+            }
+        } elseif (is_string($key)) {
+            $condition[] = "{$field} like '%{$key}%'";
+            return true;
+        }
     }
 
     private static function validateClass(): bool
