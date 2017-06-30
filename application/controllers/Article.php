@@ -11,6 +11,9 @@ class ArticleController extends \Our\Controller_AbstractRest {
         ArticleModel::$pnum = $request->get('pnum', '1');
         ArticleModel::$psize = $request->get('psize', '15');
         $result = ArticleModel::getList();
+        foreach($result as &$item) {
+            isset($item['cover']) && $item['cover'] = [$item['cover']];
+        }
         OURRH::list($result, ArticleModel::$pnum, ArticleModel::$psize);
     }
 
