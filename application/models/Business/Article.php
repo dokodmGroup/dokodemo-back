@@ -68,6 +68,9 @@ class ArticleModel extends AbstractModel
         } else {
             $field = self::$_adminField;
         }
+        if (in_array('context', $field)) {
+            unset($field[array_search('context', $field)]);
+        }
         return DAO::getInstance()->fetchAll(
             $field,
             $condition,
