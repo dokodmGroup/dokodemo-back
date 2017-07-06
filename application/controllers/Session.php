@@ -1,6 +1,7 @@
 <?php
 
 use \Business\User\LoginModel;
+use \Business\User\ProfileModel;
 use \TKS\JWTHelper;
 use \TKS\ResponseHelper;
 
@@ -44,9 +45,12 @@ class SessionController extends \Our\Controller_AbstractRest {
 
         if ($result === true) {
             $info = $login->fetchUserInfo();
+            ProfileModel::$id = $info['id'];
+            $ext_info = ProfileModel::fetch();
+            empty($ext_info) || $info += $ext_info;
             $jwt = JWTHelper::createJWT($info);
             ResponseHelper::addExtHeader('token', $jwt);
-            return [200, 'success'];
+            return [200, 'success', $info];
         } else {
             return [401, '登录失败', ['message' => $login->getMessage()]];
         }
