@@ -155,6 +155,7 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract {
     public function _initBasesetting()
     {
         error_reporting(E_ERROR);
+        ini_set('display_errors', '1');
         date_default_timezone_set("Asia/Shanghai");
         mb_internal_encoding("UTF-8");
     }
