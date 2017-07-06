@@ -5,7 +5,13 @@ use \TKS\ResponseHelper as TKSRH;
 
 class ResponseHelper
 {
-    public static $format = 'json';
+    public static function json(int $status, string $xTips, array $data = null)
+    {
+        if (empty($data) && self::isDebug()) {
+            $data = ['tips' => $xTips];
+        }
+        return TKSRH::json($status, $xTips, $data);
+    }
 
     public static function list(array $data, int $pnum, int $psize)
     {
@@ -31,26 +37,36 @@ class ResponseHelper
 
     public static function tips(int $statusCode, string $xTips)
     {
-        TKSRH::json($statusCode, $xTips);
+        if (self::isDebug()) {
+            $data = ['tips' => $xTips];
+        } else {
+            $data = [];
+        }
+        TKSRH::json($statusCode, $xTips, $data);
     }
 
     public static function permissionDenied()
     {
-        TKSRH::json(403, 'PERMISSION DENIED');
+        TKSRH::tips(403, 'PERMISSION DENIED');
     }
 
     public static function notLogin()
     {
-        TKSRH::json(401, 'PLEASE LOGIN');
+        TKSRH::tips(401, 'PLEASE LOGIN');
     }
 
     public static function authFailed()
     {
-        TKSRH::json(401, 'Auth Failed');
+        TKSRH::tips(401, 'Auth Failed');
     }
 
     public static function notValidateRequest()
     {
-        TKSRH::json(400, 'Request Not Validate');
+        TKSRH::tips(400, 'Request Not Validate');
+    }
+
+    private static function isDebug()
+    {
+        return isset($_GET['debug']) && intval($_GET['debug']) === 1;
     }
 }
