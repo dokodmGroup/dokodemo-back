@@ -27,6 +27,12 @@ class RegisterModel
         return true;
     }
 
+    public static function isEmail()
+    {
+        $result = preg_match("/([\w\-]+\@[\w\-]+\.[\w\-]+)/", $_POST["email"]);
+        return $result !== 0 && $result !== false;
+    }
+
     public static function getError(): string
     {
         return self::$_error;

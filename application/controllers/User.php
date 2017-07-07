@@ -33,11 +33,14 @@ class UserController extends \Our\Controller_AbstractRest {
             return [400, '账号不能为空'];
         }
         RegisterModel::$account = $account;
+        if (RegisterModel::isEmail() === false) {
+            return [400, '电邮格式不正确'];
+        }
         if (RegisterModel::checkAccount() === false) {
             return [400, '此邮件已注册'];
         }
 
-        return [200, '账号可以注册'];
+        return [200, '此邮件可以注册'];
     }
 
     private function submitRegister(string $account)
