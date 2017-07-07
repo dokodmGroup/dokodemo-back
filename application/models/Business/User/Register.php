@@ -2,6 +2,8 @@
 
 namespace Business\User;
 
+use \Mysql\UserModel;
+
 class RegisterModel
 {
     public static $account = '';
@@ -15,6 +17,13 @@ class RegisterModel
 
     public static function checkAccount(): bool
     {
+        if (empty(self::$account)) {
+            self::$_error = '电邮地址不能为空';
+            return false;
+        } elseif (!empty(UserModel::getInstance()->findByAccount(self::$account))) {
+            self::$_error = '该电邮地址已注册';
+            return false;
+        }
         return true;
     }
 
