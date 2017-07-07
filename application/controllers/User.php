@@ -1,6 +1,9 @@
 <?php
 
 use \Business\User\RegisterModel;
+use \Business\User\LoginModel;
+use \TKS\JWTHelper;
+use \Our\ResponseHelper;
 
 class UserController extends \Our\Controller_AbstractRest {
 
@@ -53,6 +56,12 @@ class UserController extends \Our\Controller_AbstractRest {
         
         RegisterModel::$password = $password;
         if (RegisterModel::done() === true) {
+            // 走一套标准的登录流程
+            $login = new LoginModel();
+            $result = $login->checkPassword($password, RegisterModel::getUid());
+            $info = $login->fetchUserInfo();
+            $jwt = JWTHelper::createJWT($info);
+            ResponseHelper::addExtHeader('token', $jwt);
             return [201, '账号创建成功'];
         } else {
             return [500, '账号创建失败'];

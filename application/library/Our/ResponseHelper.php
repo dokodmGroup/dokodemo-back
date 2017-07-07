@@ -44,6 +44,11 @@ class ResponseHelper
         }
         TKSRH::json($statusCode, $xTips, $data);
     }
+    
+    public static function addExtHeader(string $key, string $value)
+    {
+        return TKSRH::addExtHeader($key, $value);
+    }
 
     public static function permissionDenied()
     {

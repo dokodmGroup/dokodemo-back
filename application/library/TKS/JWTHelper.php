@@ -4,7 +4,7 @@ namespace TKS;
 
 /**
  * 增强型的 JWT 辅助类
- * 采用基于 OpenSSL 的 RSA 签名方案以优化校验
+ * 采用基于 OpenSSL 的 RSA 签名方案以加强校验
  */
 
 class JWTHelper

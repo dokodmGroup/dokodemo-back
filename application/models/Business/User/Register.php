@@ -8,25 +8,31 @@ class RegisterModel
 {
     public static $account = '';
     public static $password = '';
+    private static $_uid = 0;
     private static $_error = '';
 
     public static function done(): bool
     {
         $password = self::passwordPreprocess();
         try {
-            UserModel::getInstance()->insert(
+            self::$_uid = UserModel::getInstance()->insert(
                 [
                     'account' => self::$account,
                     'password' => $password,
                     'create_time' => time(),
                     'status' => 1
                 ]
-            );
+            , true);
         } catch(\Exception $e) {
             self::$_error = $e->getMessage();
             return false;
         }
         return true;
+    }
+
+    public static function getUid()
+    {
+        return intval(self::$_uid);
     }
 
     public static function checkAccount(): bool
