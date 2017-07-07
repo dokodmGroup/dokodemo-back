@@ -12,14 +12,14 @@ class UserController extends \Our\Controller_AbstractRest {
 
     public function save($request)
     {
-        $mode = $request->getPost('mode', $_POST['account'] ?? 'check');
+        $mode = $request->getPost('mode', $_POST['mode'] ?? 'check');
         $account = $request->getPost('account', $_POST['account'] ?? '');
         switch($mode) {
             case 'check':
                 return $this->checkAccount($account);
                 break;
             case 'submit':
-                return $this->submitRegister($account);
+                return $this->submitRegister($account, $request);
                 break;
             default:
                 return [400, 'Bad Request'];
@@ -43,7 +43,7 @@ class UserController extends \Our\Controller_AbstractRest {
         return [200, '此邮件可以注册'];
     }
 
-    private function submitRegister(string $account)
+    private function submitRegister(string $account, $request)
     {
         $result = $this->checkAccount($account);
         if ($result[0] !== 200) {

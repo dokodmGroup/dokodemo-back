@@ -12,7 +12,21 @@ class RegisterModel
 
     public static function done(): bool
     {
-        return false;
+        $password = self::passwordPreprocess();
+        try {
+            UserModel::getInstance()->insert(
+                [
+                    'account' => self::$account,
+                    'password' => $password,
+                    'create_time' => time(),
+                    'status' => 1
+                ]
+            );
+        } catch(\Exception $e) {
+            self::$_error = $e->getMessage();
+            return false;
+        }
+        return true;
     }
 
     public static function checkAccount(): bool
@@ -29,12 +43,17 @@ class RegisterModel
 
     public static function isEmail()
     {
-        $result = preg_match("/([\w\-]+\@[\w\-]+\.[\w\-]+)/", $_POST["email"]);
+        $result = preg_match("/([\w\-]+\@[\w\-]+\.[\w\-]+)/", self::$account);
         return $result !== 0 && $result !== false;
     }
 
     public static function getError(): string
     {
         return self::$_error;
+    }
+
+    private static function passwordPreprocess()
+    {
+        return md5(self::$password);
     }
 } 
