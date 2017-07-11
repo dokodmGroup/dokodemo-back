@@ -84,7 +84,8 @@ class JWTHelper
     private static function encodeHeader(): string 
     {
         return base64_encode(json_encode([
-            'alg' => 'OPENSSL_' . self::$hashMethod,
+            'alg' => 'OPENSSL_ALGO_' . self::$hashMethod,
+            'dig' => self::$hashMethod,
             'typ' => 'JWT'
         ]));
     }
@@ -154,10 +155,14 @@ class JWTHelper
     private static function sign(string $body): string
     {
         $pkeyid = openssl_pkey_get_private('file://' . realpath(self::$privateKeyPath));
+        // 妈个鸡，搞得这么神秘
+        // 实际上还是调用 hash 函数做原始的哈希摘要
         $digest = openssl_digest($body, self::$hashMethod);
         // 私钥不正确会产生 warning 提示
         // 暂未知如何捕获，这样处理吧
-        @openssl_sign($digest, $signature, $pkeyid);
+        $exec = '$flag = OPENSSL_ALGO_' . self::$hashMethod . ';';
+        eval($exec);
+        @openssl_sign($digest, $signature, $pkeyid, $flag);
         self::$_errors[] = error_get_last();
         return base64_encode($signature);
     }
