@@ -12,7 +12,7 @@ class JWTHelper
     // 配置型变量
     private static $hashMethod = 'SHA256';
     private static $ttl = 3600;
-    private static $privateKeyPath = '../private.pem';
+    private static $privateKeyPath = APPLICATION_PATH . '/private.pem';
     private static $issuer = 'Dokodemo Content Manage System';
     // 检测 JWT 是否过期，仅内部使用
     private static $outOfTtl = false;
@@ -58,6 +58,7 @@ class JWTHelper
         if (count($info) ===  3) {
             $body = "{$info[0]}.{$info[1]}";
             if (self::sign($body) !== $info[2]) {
+                self::$_errors[] = 'checkJWT: sign not validate';
                 return false;
             } else {
                 $payload = self::decodePayload($info[1]);
@@ -65,6 +66,7 @@ class JWTHelper
                 return true;
             }
         } else {
+            self::$_errors[] = 'checkJWT: jwt not validate';
             return false;
         }
     }
@@ -155,6 +157,10 @@ class JWTHelper
     private static function sign(string $body): string
     {
         $pkeyid = openssl_pkey_get_private('file://' . realpath(self::$privateKeyPath));
+        if ($pkeyid === false) {
+            self::$_errors[] = 'private key file not validate!';
+            return '';
+        }
         // 妈个鸡，搞得这么神秘
         // 实际上还是调用 hash 函数做原始的哈希摘要
         $digest = openssl_digest($body, self::$hashMethod);
