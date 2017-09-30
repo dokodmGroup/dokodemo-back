@@ -7,7 +7,8 @@ namespace Mysql;
  *
  * @package Mysql
  */
-abstract class AbstractModel {
+abstract class AbstractModel
+{
 
     /**
      * ResultSet返回类型
@@ -16,15 +17,15 @@ abstract class AbstractModel {
 
     /**
      * 表名
-     * 
+     *
      * @var string
      */
     protected $_tableName = null;
 
     /**
      * 表的主键名
-     * 
-     * @var type 
+     *
+     * @var type
      */
     protected $_primaryKey = "id";
 
@@ -33,21 +34,24 @@ abstract class AbstractModel {
      * mysql本身不支持嵌套事务,这里使用计数器来支持嵌套事务
      * 要求事务有begin就一定要有commit或者rollback
      */
-    static $_transactionCounter = 0;
+    private static $_transactionCounter = 0;
 
     /**
      * Zend 的适配器
-     * 
+     *
      * @var \Zend\Db\Adapter\Adapter
      */
-    static $dbAdapter = null;
+    private static $dbAdapter = null;
+
+    private static $_select = null;
 
     /**
      * 返回 Zend 的适配器
-     * 
+     *
      * @return \Zend\Db\Adapter\Adapter
      */
-    public function _getAdapter() {
+    public function _getAdapter()
+    {
         if (!self::$dbAdapter) {
             $conf = \Yaf\Registry::get('config')->get('resources.database.params');
             if (!$conf) {
@@ -61,10 +65,11 @@ abstract class AbstractModel {
 
     /**
      * 返回Zend的TableGateway
-     * 
+     *
      * @return \Zend\Db\TableGateway\TableGateway
      */
-    protected function _getDbTableGateway() {
+    protected function _getDbTableGateway()
+    {
         $resultSet    = new \Zend\Db\ResultSet\ResultSet(self::RESULT_SET_RETURN_TYPE_ARRAY);
         $tableGateway = new \Zend\Db\TableGateway\TableGateway($this->_tableName, $this->_getAdapter(), null, $resultSet);
         return $tableGateway;
@@ -72,18 +77,25 @@ abstract class AbstractModel {
 
     /**
      * 返回Zend的Select对象
-     * 
+     *
      * @return Zend\Db\Sql\Select
      */
-    protected function _getDbSelect() {
-        $sql = new \Zend\Db\Sql\Sql($this->_getAdapter(), $this->_tableName);
-        return $sql->select();
+    protected function _getDbSelect(): \Zend\Db\Sql\Select
+    {
+        if (!self::$_select instanceof \Zend\Db\Sql\Select) {
+            $sql = new \Zend\Db\Sql\Sql(
+                $this->_getAdapter(),
+                $this->_tableName);
+            self::$_select = $sql->select();
+        }
+        return self::$_select;
     }
 
     /**
      * 开启事务
      */
-    public function beginTransaction() {
+    public function beginTransaction()
+    {
         if (self::$_transactionCounter == 0) {
             $this->_getAdapter()->getDriver()->getConnection()->beginTransaction();
         }
@@ -93,7 +105,8 @@ abstract class AbstractModel {
     /**
      * 提交事务
      */
-    public function commit() {
+    public function commit()
+    {
         self::$_transactionCounter--;
         if (self::$_transactionCounter == 0) {
             $this->_getAdapter()->getDriver()->getConnection()->commit();
@@ -103,7 +116,8 @@ abstract class AbstractModel {
     /**
      * 回滚事务
      */
-    public function rollback() {
+    public function rollback()
+    {
         self::$_transactionCounter--;
         if (self::$_transactionCounter == 0) {
             $this->_getAdapter()->getDriver()->getConnection()->rollback();
@@ -112,11 +126,12 @@ abstract class AbstractModel {
 
     /**
      * 根据主键查找数据
-     * 
+     *
      * @param int $id 主键
      * @return array | null
      */
-    public function find($id) {
+    public function find($id)
+    {
         $resultSet = $this->_getDbTableGateway()->select(array($this->_primaryKey => $id));
         $result    = $resultSet->current();
         if ($result) {
@@ -127,7 +142,7 @@ abstract class AbstractModel {
 
     /**
      * 根据各个参数筛选出合适的数据
-     * 
+     *
      * @param array         $columns    需要查找的字段
      * @param array         $where      筛选条件
      * @param array         $order      排序条件
@@ -136,7 +151,14 @@ abstract class AbstractModel {
      * @param array         $group      分组条件
      * @return array
      */
-    public function fetchAll($columns = null, $where = null, $order = null, $count = null, $offset = null, $group = null) {
+    public function fetchAll(
+        $columns = null,
+        $where = null,
+        $order = null,
+        $count = null,
+        $offset = null,
+        $group = null): array
+    {
         $adapter = $this->_getAdapter();
         $sql     = new \Zend\Db\Sql\Sql($adapter, $this->_tableName);
         $select  = $this->_getDbSelect();
@@ -166,11 +188,12 @@ abstract class AbstractModel {
 
     /**
      * insert data
-     * 
+     *
      * @param array $data
      * @return int|false
      */
-    public function insert($data, $isReturnLastInsertValue = false) {
+    public function insert($data, $isReturnLastInsertValue = false)
+    {
         $dbTableGateway = $this->_getDbTableGateway();
         $result         = $dbTableGateway->insert($data);
         if ($isReturnLastInsertValue && $result) {
@@ -187,7 +210,8 @@ abstract class AbstractModel {
      * @param array $where
      * @return int The number of rows updated.
      */
-    public function update($data, $where) {
+    public function update($data, $where)
+    {
         return $this->_getDbTableGateway()->update($data, $where);
     }
 
@@ -197,15 +221,34 @@ abstract class AbstractModel {
      * @param array $where
      * @return int The number of rows deleted.
      */
-    public function remove($where) {
+    public function remove($where)
+    {
         return $this->_getDbTableGateway()->delete($where);
     }
 
     /**
      * 禁止clone
      */
-    public function __clone() {
+    public function __clone()
+    {
         trigger_error('Clone is not allow!', E_USER_ERROR);
     }
 
+    public function __call($method, $args)
+    {
+        $select = ['columns', 'where', 'order', 'limit', 'offset', 'group'];
+        $exec   = ['select'];
+        if (in_array($method, $select)) {
+            call_user_func_array([$this->_getDbSelect(), $method], $args);
+            return $this;
+        } elseif (in_array($method, $exec)) {
+            $adapter = $this->_getAdapter();
+            $sql     = new \Zend\Db\Sql\Sql($adapter, $this->_tableName);
+            $select  = $this->_getDbSelect();
+            $query   = $sql->getSqlStringForSqlObject($select);
+            $result  = $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)
+                ->toArray();
+            return $result;
+        }
+    }
 }
